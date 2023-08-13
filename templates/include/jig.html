@@ -1,0 +1,107 @@
+{% load static %}
+
+<script src="{% static 'assets/vendor/libs/jquery/jquery.js' %}"></script>
+<script src="{% static 'assets/vendor/libs/popper/popper.js' %}"></script>
+<script src="{% static 'assets/vendor/js/bootstrap.js' %}"></script>
+<script src="{% static 'assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js' %}"></script>
+
+<script src="{% static 'assets/vendor/js/menu.js' %}"></script>
+<script src="{% static 'assets/js/main.js' %}"></script>
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<script src="{% static 'assets/js/ui-toasts.js' %}"></script>
+<!-- Apex Chart -->
+<script src="{% static 'assets/vendor/apexchart/apexchart.js' %}"></script>
+
+<!-- Vendors JS -->
+<script src="{% static 'assets/vendor/libs/apex-charts/apexcharts.js' %}"></script>
+<!-- Page JS -->
+<script src="{% static 'assets/js/dashboards-analytics.js' %}"></script>
+<!-- Page JS -->
+<script src="{% static 'assets/js/ui-modals.js' %}"></script>
+
+<script type="text/javascript">
+    $("#id_zakaz_user").change(function () {
+        const url = $("#personForm").attr("data-zakcode-url");  // get the url of the `load_cities` view
+        const zakaz_userId = $(this).val();  // get the selected country ID from the HTML input
+        $.ajax({                       // initialize an AJAX request
+            url: url,                    // set the url of the request (= /persons/ajax/load-cities/ )
+            data: {
+                'zakaz_user_id': zakaz_userId       // add the country id to the GET parameters
+            },
+            success: function (data) {
+                $("#id_zakaz_code").html(data);
+            }
+        });
+    });
+    $("#id_zakaz_code").change(function () {
+        const url = $("#personForm").attr("data-zakgornus-url");
+        const zakaz_codeId = $(this).val();
+        $.ajax({
+            url: url,
+            data: {
+                'zakaz_code_id': zakaz_codeId
+            },
+            success: function (data) {
+                const h_gornus_html = `<option value="${data['z_g']['id']}">${data['z_g']['name']}</option>`
+                const h_olceg_html = `<input value="${data['olceg']}">`
+                const sany_html = `<label>${data['j_sany']}</label>`
+                $("#id_h_gornusi").html(h_gornus_html);
+                $("#id_satylan_halta_sany").html(sany_html);
+                $("#id_h_olceg").attr('value', data['olceg']);
+
+                $("#id_d_gornusi").html(h_gornus_html);
+            }
+        });
+    });
+    {% comment %} $("#id_h_gornusi").change(function () {
+        const url = $("#personForm").attr("data-zak-url");
+        const kod = $(this).val();
+        
+        $.ajax({                       // initialize an AJAX request
+            url: url,
+            data: {
+                'mycode': kod      // add the country id to the GET parameters
+            },
+            success: function (data) {
+                $("#zakaz_code").html(data);
+            }
+        });
+    }); {% endcomment %}
+    {% comment %} $(document).delegate("#myBtn", "click", function () { 
+        $("#mymodalCenter").modal("show");        
+   }); {% endcomment %}
+    {% comment %} $(".zakupdate").click(function (e) {
+        const url = $("#zakupForm").attr("data-zakupdate-url");  // get the url of the `load_cities` view
+        const zakupdateId = $(this).attr('zakupdate-id');
+        $.ajax({ 
+            type: "POST",                      // initialize an AJAX request
+            url: url,                    // set the url of the request (= /persons/ajax/load-cities/ )
+            data: {      // add the country id to the GET parameters
+                'zakupdate': zakupdateId 
+            },
+            success: function (data) {   // `data` is the return of the `load_cities` view function
+                $("#zakupdate").html(data);
+            }
+        });
+    }); {% endcomment %}
+    {% comment %} $('.zakupdate').click(function (e) {
+        const url = $("#zakupForm").attr("data-zakupdate-url");
+        var zakupdateId = $(this).attr('zakupdate-id');
+          $.post(url,
+               { 
+             zakupdate:zakupdateId 
+              },
+    function(data, status){
+      // you can do what ever you want here after success 
+      $('#'+zakupdateId).hide();
+      });
+
+    }) {% endcomment %}
+</script>
+
+<script>
+    var message_ele = document.getElementById("msg");
+    setTimeout(function() {
+      message_ele.style.display = "none";
+    }, 5000);
+</script>

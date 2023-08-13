@@ -1,0 +1,1307 @@
+{% extends 'shu/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block menu %}
+<!-- nav menu -->
+  {% if user.wez.name == "Admin" %}
+  <li class="menu-item">
+    <a href="{% url 'admin:index' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-shield-quarter"></i>
+      <div>Admin Panel</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'office-kadr' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-group"></i>
+      <div>Işgärler bölümi</div>
+    </a>
+  </li>
+  {% endif %}
+  <li class="menu-item">
+    <a href="{% url 'sehler' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-dock-top"></i>
+      <div>Önümçilikler</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'zakaz-users' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-user-pin"></i>
+      <div>Zakazçylar</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'hasaphana-admin' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-cube-alt"></i>
+      <div>Bölek hasaplar</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'algylar' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-money"></i>
+      <div>Algylar</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'bergiler' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-money"></i>
+      <div>Bergiler</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'balans' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-category-alt"></i>
+      <div>Balans</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'cigmal-zawotdan' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-world"></i>
+      <div>GPZ we TNGIZT</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'sklad' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-layer"></i>
+      <div>Sklatlar</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'import' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-import"></i>
+      <div>Import</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'export' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-export"></i>
+      <div>Eksport</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'inwentar' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-devices"></i>
+      <div>inwentarlar</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'das-zawod' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-archive"></i>
+      <div>Daşyndan işleşilýän zawodlar</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'karz-pul' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-dollar-circle"></i>
+      <div>Daşyndan karz alnan pullar</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'aylyk-premya' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-credit-card"></i>
+      <div>Aýlyklar we premýalar</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'managers' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-id-card"></i>
+      <div>Daşary ýurt klientler we peýdalary</div>
+    </a>
+  </li>
+  <li class="menu-item">
+    <a href="{% url 'walyuta-bolum' %}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-arch"></i>
+      <div>Bankdaky hereketler</div>
+    </a>
+  </li>
+<!--/ nav menu -->
+{% endblock menu %}
+
+{% block content %}
+<style>
+  .card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+  }
+  
+  .card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  }
+</style>
+<div class="content-wrapper">
+  <!-- alert toast -->
+    {% if messages %}
+    <div class="toast-container">
+      <div class="bs-toast toast fade show bg-success position-absolute "style="right:10px; top:10px;"  role="alert" aria-live="assertive" aria-atomic="true" id="msg">
+        <div class="toast-header">
+          <i class="bx bx-bell me-2"></i>
+          <div class="me-auto fw-semibold">Salam!</div>
+          <small>{% now 'd.m.Y' %}</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          {% for message in messages %}
+          {{ message }}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  <!-- /alert toast -->
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">SHU /</span> {{ title }}</h4>
+      
+      <div class="row">
+        <div class="col-lg-12 mb-4 order-0">
+          <div class="card">
+            <div class="d-flex align-items-center row">
+              <div class="col-sm-8">
+                <div class="card-body" style="padding-left:120px;">
+                  <div class="me-2 mt-3">
+                    <span class="badge bg-label-info p-2"><i class="bx bx-wallet text-info"></i></span>
+                    <h3 class="card-title"><strong>{{jemleri_m|floatformat:2|default_if_none:""}}</strong></h3>
+                  </div>
+                  <div class="me-2">
+                    <span class="badge bg-label-primary p-2"><i class="bx bx-dollar text-primary"></i></span>
+                    <h3 class="card-title"><strong>{{jemleri_d|floatformat:2|default_if_none:""}}</strong></h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-3 text-center text-sm-left">
+                <div class="card-body pb-0 px-0 px-md-4">
+                  <img
+                    src="{% static '/assets/img/illustrations/total.png' %}"
+                    height="140"
+                    alt="View Badge User"
+                    data-app-dark-img="{% static 'illustrations/man-with-laptop-dark.png' %}"
+                    data-app-light-img="{% static 'illustrations/man-with-laptop-light.png' %}"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- girdeji çykdaýjy manatda we dollarda -->
+          <div class="col-12">
+            <div class="row">
+              <div class="col-md-6 col-lg-2 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-success.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Jemi Algy</span>
+                    {% if ajem_m > 0 %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2"> {{ajem_m|floatformat:2|default_if_none:""}}</h5>
+                    {% elif ajem_m == 0 or ajem_m != "" %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                    {% if ajem_d > 0 %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2"> {{ajem_d|floatformat:2|default_if_none:""}}</h5>
+                    {% elif ajem_d == 0 or ajem_d != "" %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-2 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-error.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Jemi bergi</span>
+                    {% if bjem_m > 0 %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2"> {{bjem_m|floatformat:2|default_if_none:""}}</h5>
+                    {% elif bjem_m == 0 or bjem_m != "" %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                    {% if bjem_d > 0 %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2"> {{bjem_d|floatformat:2|default_if_none:""}}</h5>
+                    {% elif bjem_d == 0 or bjem_d != "" %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-2 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-primary.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Jemi inwentar</span>
+                    {% if inw_m > 0 %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2"> {{inw_m|floatformat:2|default_if_none:""}}</h5>
+                    {% elif inw_m == 0 or inw_m != "" %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                    {% if inw_d > 0 %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2"> {{inw_d|floatformat:2|default_if_none:""}}</h5>
+                    {% elif inw_d == 0 or inw_d != "" %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-2 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-success.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Galyndy pullar</span>
+                    {% if g_m > 0 %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2"> {{g_m|floatformat:2|default_if_none:""}}</h5>
+                    {% elif g_m == 0 or g_m != "" %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                    {% if g_d > 0 %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2"> {{g_d|floatformat:2|default_if_none:""}}</h5>
+                    {% elif g_d == 0 or g_d != "" %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-2 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-primary.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Galyndy çigmal puly</span>
+                    {% if c_m > 0 %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2"> {{c_m|floatformat:2|default_if_none:""}}</h5>
+                    {% elif c_m == 0 or c_m != "" %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                    {% if c_d > 0 %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2"> {{c_d|floatformat:2|default_if_none:""}}</h5>
+                    {% elif c_d == 0 or c_d != "" %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-2 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-primary.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Galyndy haryt puly</span>
+                    {% if seh_jem_m > 0 %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2"> {{seh_jem_m|floatformat:2|default_if_none:""}}</h5>
+                    {% elif seh_jem_m == 0 or seh_jem_m != "" %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                    {% if seh_jem_d > 0 %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2"> {{seh_jem_d|floatformat:2|default_if_none:""}}</h5>
+                    {% elif seh_jem_d == 0 or seh_jem_d != "" %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <!-- girdeji çykdaýjy manatda we dollarda -->
+        </div>
+
+      <div class="row">
+    <!-- Aýdaky öndürilen önümiň hasabaty  -->
+      <div class="col-12 col-lg-12 order-2 order-md-3 order-lg-2 mb-4">
+        <div class="card">
+          <div class="row row-bordered g-0">
+            <div class="col-md-8">
+              <h5 class="card-header m-0 me-2 pb-3">Daşyndan alynan we gelen çigmallaryň hasabaty</h5>
+              <div id="myincomeChart" class="px-2"></div>
+            </div>
+            <div class="col-md-4">
+              <div class="card-body">
+                <div class="text-center fw-semibold pt-3 mb-2">Algylar we bergileriň hasabaty</div>
+              </div>
+              <center><div id="myorderStatisticsChart"></div></center>
+
+              <div class="d-flex px-xxl-4 px-lg-2 p-4 gap-xxl-3 gap-lg-1 gap-3 justify-content-between">
+                <div class="d-flex">
+                  <div class="me-2 mt-3">
+                    <span class="badge bg-label-primary p-2"><i class="bx bx-dollar text-primary"></i></span>
+                  </div>
+                  <div class="d-flex flex-column">
+                    <small>TMT</small>
+                    <h6 class="mb-0">{{ajem_m|floatformat:2|default_if_none:"" }}</h6>
+                    <small>$</small>
+                    <h6 class="mb-0">{{ajem_d|floatformat:2|default_if_none:"" }}</h6>
+                  </div>
+                </div>
+                <div class="d-flex">
+                  <div class="me-2 mt-3">
+                    <span class="badge bg-label-info p-2"><i class="bx bx-wallet text-info"></i></span>
+                  </div>
+                  <div class="d-flex flex-column">
+                    <small>TMT</small>
+                    <h6 class="mb-0">{{bjem_m|floatformat:2|default_if_none:"" }}</h6>
+                    <small>$</small>
+                    <h6 class="mb-0">{{bjem_d|floatformat:2|default_if_none:"" }}</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <!--/ Aýdaky öndürilen önümiň hasabaty -->
+
+    <!-- Zakazçy girdeji çykdaýjy peýda -->
+      {% comment %} <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
+        <div class="row">
+          <div class="col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                  <div class="avatar flex-shrink-0">
+                    <img src="{% static 'assets/img/icons/unicons/cc-error.png' %}" alt="Credit Card" class="rounded" />
+                  </div>
+                </div>
+                <span class="fw-semibold d-block mb-3">Çykdajy</span>
+                {% if zak_sw.my_cyk > 0 %}
+                <small>TMT</small><h3 class="card-title text-nowrap mb-2"> {{zak_sw.my_cyk|default_if_none:""}}</h3>
+                <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> </small>
+                {% elif zak_sw.my_cyk == 0 or zak_sw.my_cyk != "" %}
+                <small>TMT</small><h4 class="card-title text-nowrap mb-2">00.00</h4>
+                <small class="text-danger fw-semibold"><i class="bx bx-down-arrow-alt"></i></small>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                  <div class="avatar flex-shrink-0">
+                    <img src="{% static 'assets/img/icons/unicons/cc-primary.png' %}" alt="Credit Card" class="rounded" />
+                  </div>
+                </div>
+                <span class="fw-semibold d-block mb-3">Girdeji</span>
+                {% if zak_sw.my_gir > 0 %}
+                <small>TMT</small><h4 class="card-title mb-2">{{zak_sw.my_gir|default_if_none:""}}</h4>
+                <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> </small>
+                {% elif zak_sw.my_gir == 0 or zak_sw.my_gir != "" %}
+                <small>TMT</small><h4 class="card-title mb-2">00.00</h4>
+                <small class="text-danger fw-semibold"><i class="bx bx-down-arrow-alt"></i></small>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-12 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between flex-sm-row flex-column gap-3">
+                  <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
+                    <div class="card-title">
+                      <h5 class="text-nowrap mb-2">Peýda</h5>
+                      <span class="badge bg-label-warning rounded-pill">{% for x in zak_sw %}{{x.sene|date:"m.Y"|default_if_none:""}}{% endfor %}</span>
+                    </div>
+                    <div class="mt-sm-auto">
+                      {% if zak_sw.my_pey > 0 %}
+                      <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> </small>
+                      <small>TMT </small><h3 class="mb-0">{{zak_sw.my_pey|default_if_none:""}}</h3>
+                      {% elif zak_sw.my_pey == 0 or zak_sw.my_pey != "" %}
+                      <small class="text-danger fw-semibold"><i class="bx bx-down-arrow-alt"></i></small>
+                      <small>TMT</small><h4 class="mb-0">00.00</h4>
+                      {% endif %}
+                      
+                    </div>
+                  </div>
+                  <div id="profileReportChart1"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> {% endcomment %}
+    <!--/ Zakazçy girdeji çykdaýjy peýda -->
+      </div>
+
+    <div class="row">
+    <!-- Order Statistics -->
+      {% comment %} <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-4">
+        <div class="card h-100">
+          <div class="card-header d-flex align-items-center justify-content-between pb-0">
+            <div class="card-title mb-0">
+              <h5 class="m-0 me-2">Jemi hasabatlar</h5>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="d-flex flex-column align-items-center gap-1">
+                <h2 class="mb-2">{{ gun3.my_ah|default_if_none:"" }}</h2>
+                <span>Ahyrky galyndy</span>
+              </div>
+              <div id="myorderStatisticsChart"></div>
+            </div>
+            <ul class="p-0 m-0">
+              {% for x in minus %}
+              <li class="d-flex mb-4 pb-1">
+                <div class="avatar flex-shrink-0 me-3">
+                  <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-package"></i></span>
+                </div>
+                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                  <div class="me-2">
+                    <h6 class="mb-0">{{x.gornus|default_if_none:""}}</h6>
+                    <small class="text-muted">{{x.olceg|default_if_none:""}}</small>
+                  </div>
+                  <div class="user-progress">
+                    <small class="fw-semibold">Ýerinde bar bolan haryt:  <strong style="color: DodgerBlue;">{{x.yer_bar_har|default_if_none:""}}</strong></small>
+                  </div>
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div> {% endcomment %}
+    <!--/ Order Statistics -->
+
+    <!-- Expense Overview -->
+      {% comment %} <div class="col-md-6 col-lg-4 order-1 mb-4">
+        <div class="card h-100">
+          <div class="card-body px-0">
+            <div class="tab-content p-0">
+              <div class="tab-pane fade show active" id="navs-tabs-line-card-income" role="tabpanel">
+                <div class="d-flex p-4 pt-3">
+                  <div class="avatar flex-shrink-0 me-3">
+                    <img src="{% static 'assets/img/icons/unicons/wallet.png' %}" alt="User" />
+                  </div>
+                  <div>
+                    <small class="text-muted d-block">Harytlaryň hasabaty</small>
+                    <div class="d-flex align-items-center">
+                      <h6 class="mb-0 me-1">Abat, brak we ganar haltalaryň sany we kg</h6>
+                    </div>
+                  </div>
+                </div>
+                <div id="chart"></div>
+                <div class="d-flex justify-content-center pt-4 gap-2">
+                  <div class="flex-shrink-0">
+                    <div id="myexpensesOfWeek"></div>
+                  </div>
+                  <div>
+                    <p class="mb-n1 mt-4">Abat haltanyň jemi bahasy</p>
+                    <small class="text-muted">$39 less than last week</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> {% endcomment %}
+    <!--/ Expense Overview -->
+
+    <!-- Transactions -->
+      {% comment %} <div class="col-md-6 col-lg-4 order-2 mb-4">
+        <div class="card h-100">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="card-title m-0 me-2">Gündelik tikilýän harytlar</h5>
+          </div>
+          <div class="card-body">
+            <ul class="p-0 m-0">
+              {% for x in myuser %}
+              <li class="d-flex mb-4 pb-1">
+                <div class="avatar flex-shrink-0 me-3">
+                  <img src="{% static 'assets/img/icons/unicons/paypal.png' %}" alt="User" class="rounded" />
+                </div>
+                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                  <div class="me-2">
+                    <small class="text-muted d-block mb-1">{{x.h_gornusi|default_if_none:""}} / {{x.h_olceg|default_if_none:""}}</small>
+                    <h6 class="mb-0">{{x.user|default_if_none:""}}</h6>
+                  </div>
+                  <div class="user-progress d-flex align-items-center gap-1">
+                    <h6 class="mb-0">{{x.abathalta_sany|default_if_none:""}}</h6>
+                    <span class="text-muted">sany</span>
+                  </div>
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+            <!-- Paginator -->
+            {% if myuser.has_previous %}
+                <a href="?page={{ myuser.previous_page_number }}"><button class="btn rounded-pill btn-outline-primary"> Öňki</button></a>
+            {% endif %}
+
+            sahypa {{ myuser.number }} / {{ myuser.paginator.num_pages }}
+
+            {% if myuser.has_next %}
+                <a href="?page={{ myuser.next_page_number }}"><button class="btn rounded-pill btn-outline-primary"> Indiki</button></a>  
+            {% endif %}
+            <!--/ Paginator -->
+          </div>
+        </div>
+      </div> {% endcomment %}
+    <!--/ Transactions -->
+    </div>
+
+    </div>
+  </div>
+
+    <!-- / Content -->
+  </div>
+<script type="text/javascript">
+  (function () {
+    let cardColor, headingColor, axisColor, shadeColor, borderColor;
+  
+    cardColor = config.colors.white;
+    headingColor = config.colors.headingColor;
+    axisColor = config.colors.axisColor;
+    borderColor = config.colors.borderColor;
+  
+    // Total Revenue Report Chart - Bar Chart
+    // --------------------------------------------------------------------
+    const totalRevenueChartEl = document.querySelector('#mytotalRevenueChart1'),
+    totalRevenueChartOptions = {
+      series: [
+        {
+          name: 'Algylar TMT',
+          data: [{% for x in ajem_mtest %} {{ x }}, {% endfor %}]
+        },
+        {
+          name: 'Bergiler',
+          data: [{% for x in bjem_mchart %} {{ x }}, {% endfor %}] //ajem_dtest
+        }
+      ],
+      chart: {
+        height: 450,
+        stacked: true,
+        type: 'area',
+        toolbar: { show: false }
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: '80%',
+          borderRadius: 12,
+          startingShape: 'rounded',
+          endingShape: 'rounded'
+        }
+      },
+      colors: [config.colors.primary, config.colors.info],
+      dataLabels: {
+        enabled: false
+      },
+      stroke: {
+        curve: 'smooth',
+        width: 6,
+        lineCap: 'round',
+        colors: [cardColor]
+      },
+      legend: {
+        show: true,
+        horizontalAlign: 'left',
+        position: 'top',
+        markers: {
+          height: 8,
+          width: 8,
+          radius: 12,
+          offsetX: -3
+        },
+        labels: {
+          colors: axisColor
+        },
+        itemMargin: {
+          horizontal: 10
+        }
+      },
+      grid: {
+        borderColor: borderColor,
+        padding: {
+          top: 0,
+          bottom: -8,
+          left: 20,
+          right: 20
+        }
+      },
+      xaxis: {
+        categories: [],
+        labels: {
+          style: {
+            fontSize: '13px',
+            colors: axisColor
+          }
+        },
+        axisTicks: {
+          show: false
+        },
+        axisBorder: {
+          show: false
+        }
+      },
+      yaxis: {
+        labels: {
+          style: {
+            fontSize: '13px',
+            colors: axisColor
+          }
+        }
+      },
+      responsive: [
+        {
+          breakpoint: 1700,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '32%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 1580,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '35%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 1440,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '42%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 1300,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '48%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 1200,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '40%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 1040,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 11,
+                columnWidth: '48%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 991,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '30%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 840,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '35%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 768,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '28%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 640,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '32%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 576,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '37%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 480,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '45%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 420,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '52%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 380,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '60%'
+              }
+            }
+          }
+        }
+      ],
+      states: {
+        hover: {
+          filter: {
+            type: 'none'
+          }
+        },
+        active: {
+          filter: {
+            type: 'none'
+          }
+        }
+      }
+    };
+  if (typeof totalRevenueChartEl !== undefined && totalRevenueChartEl !== null) {
+    const totalRevenueChart = new ApexCharts(totalRevenueChartEl, totalRevenueChartOptions);
+    totalRevenueChart.render();
+  }
+  
+    // Growth Chart - Radial Bar Chart
+    // --------------------------------------------------------------------
+    const growthChartEl = document.querySelector('#growthChart1'),
+      growthChartOptions = {
+        series: [31/100,],
+        labels: ['{{ gun3.my_sat|default_if_none:"" }} sany satyldy'],
+        chart: {
+          height: 240,
+          type: 'radialBar'
+        },
+        plotOptions: {
+          radialBar: {
+            size: 150,
+            offsetY: 10,
+            startAngle: -150,
+            endAngle: 150,
+            hollow: {
+              size: '55%'
+            },
+            track: {
+              background: cardColor,
+              strokeWidth: '100%'
+            },
+            dataLabels: {
+              name: {
+                offsetY: 15,
+                color: headingColor,
+                fontSize: '15px',
+                fontWeight: '600',
+                fontFamily: 'Public Sans'
+              },
+              value: {
+                offsetY: -25,
+                color: headingColor,
+                fontSize: '22px',
+                fontWeight: '500',
+                fontFamily: 'Public Sans'
+              }
+            }
+          }
+        },
+        colors: [config.colors.primary],
+        fill: {
+          type: 'gradient',
+          gradient: {
+            shade: 'dark',
+            shadeIntensity: 0.5,
+            gradientToColors: [config.colors.primary],
+            inverseColors: true,
+            opacityFrom: 1,
+            opacityTo: 0.6,
+            stops: [30, 70, 100]
+          }
+        },
+        stroke: {
+          dashArray: 5
+        },
+        grid: {
+          padding: {
+            top: -35,
+            bottom: -10
+          }
+        },
+        states: {
+          hover: {
+            filter: {
+              type: 'none'
+            }
+          },
+          active: {
+            filter: {
+              type: 'none'
+            }
+          }
+        }
+      };
+    if (typeof growthChartEl !== undefined && growthChartEl !== null) {
+      const growthChart = new ApexCharts(growthChartEl, growthChartOptions);
+      growthChart.render();
+    }
+
+    // Profit Report Line Chart
+    // --------------------------------------------------------------------
+    const profileReportChartEl1 = document.querySelector('#profileReportChart1'),
+    profileReportChartConfig1 = {
+      chart: {
+        height: 80,
+        // width: 175,
+        type: 'line',
+        toolbar: {
+          show: false
+        },
+        dropShadow: {
+          enabled: true,
+          top: 10,
+          left: 5,
+          blur: 3,
+          color: config.colors.success,
+          opacity: 0.15
+        },
+        sparkline: {
+          enabled: true
+        }
+      },
+      grid: {
+        show: false,
+        padding: {
+          right: 8
+        }
+      },
+      colors: [config.colors.success],
+      dataLabels: {
+        enabled: false
+      },
+      stroke: {
+        width: 5,
+        curve: 'smooth'
+      },
+      series: [
+        {
+          name: 'peýda',
+          data: [{{zak_sw.gal_pey_summa|default_if_none:""}},]
+        }
+      ],
+      xaxis: {
+        show: false,
+        lines: {
+          show: false
+        },
+        labels: {
+          show: false
+        },
+        axisBorder: {
+          show: false
+        }
+      },
+      yaxis: {
+        show: false
+      }
+    };
+  if (typeof profileReportChartEl1 !== undefined && profileReportChartEl1 !== null) {
+    const profileReportChart1 = new ApexCharts(profileReportChartEl1, profileReportChartConfig1);
+    profileReportChart1.render();
+  }
+
+    // Order Statistics Chart 
+  // --------------------------------------------------------------------
+  const chartOrderStatistics = document.querySelector('#myorderStatisticsChart'),
+    orderChartConfig = {
+      chart: {
+        height: 350,
+        width: 350,
+        type: 'donut'
+      },
+      labels: ['Jemi algylar TMT', 'Jemi algylar $', 'Jemi bergiler TMT', 'Jemi bergiler $'],
+      series:[{{ ajem_m|floatformat:2|default_if_none:"" }},{{ ajem_d|floatformat:2|default_if_none:"" }},{{ bjem_m|floatformat:2|default_if_none:"" }},{{ bjem_d|floatformat:2|default_if_none:"" }}],
+      //series: [{% for deg in minus1 %}"{{ deg.yer_bar_har|default_if_none:"" }}", "{{ deg.gec_ay_gal|default_if_none:"" }}", "{{ deg.ah_gal|default_if_none:"" }}", "{{ deg.tapawut|default_if_none:"" }}",{% endfor %}],
+      colors: [config.colors.success,config.colors.primary, config.colors.secondary, config.colors.info],
+      stroke: {
+        width: 5,
+        colors: cardColor
+      },
+      dataLabels: {
+        enabled: false,
+        formatter: function (val, opt) {
+          return parseInt(val);
+        }
+      },
+      legend: {
+        show: false
+      },
+      grid: {
+        padding: {
+          top: 0,
+          bottom: 0,
+          right: 15
+        }
+      },
+      plotOptions: {
+        pie: {
+          donut: {
+            size: '75%',
+            labels: {
+              show: true,
+              value: {
+                fontSize: '2rem',
+                fontFamily: 'Public Sans',
+                color: headingColor,
+                offsetY: -15,
+                formatter: function (val) {
+                  return parseInt(val);
+                }
+              },
+              name: {
+                offsetY: 20,
+                fontFamily: 'Public Sans'
+              },
+              total: {
+                show: true,
+                fontSize: '0.8125rem',
+                color: axisColor,
+                label: 'Jemi algylar TMT',
+                formatter: function (w) {
+                  return {{ ajem_m|floatformat:2|default_if_none:"" }};//'{{ ah|default_if_none:"" }}';
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+  if (typeof chartOrderStatistics !== undefined && chartOrderStatistics !== null) {
+    const statisticsChart = new ApexCharts(chartOrderStatistics, orderChartConfig);
+    statisticsChart.render();
+  }
+
+  // Income Chart - Area chart
+  // --------------------------------------------------------------------
+  const incomeChartEl = document.querySelector('#myincomeChart'),
+    incomeChartConfig = {
+      series: [
+        {
+          name: 'Satyn alynan çigmalyň jemi bahasy TMT: ',
+          data: [{% for x in sklad %}{{ x.j_bahasy_m|floatformat:2|default_if_none:"" }},{% endfor %} ]
+        },
+        {
+          name: 'Sklada gelen çigmalyň jemi bahasy TMT: ',
+          data: [{% for x in sklad %}{{ x.j_gel_bah_m|floatformat:2|default_if_none:"" }},{% endfor %} ]
+        },
+        {
+          name: 'Satyn alynan çigmalyň jemi bahasy $: ',
+          data: [{% for x in sklad %}{{ x.j_bahasy_d|floatformat:2|default_if_none:"" }},{% endfor %} ]
+        },
+        {
+          name: 'Sklada gelen çigmalyň jemi bahasy $: ',
+          data: [{% for x in sklad %}{{ x.j_gel_bah_d|floatformat:2|default_if_none:"" }},{% endfor %} ]
+        }
+      ],
+      chart: {
+        height: 350,
+        parentHeightOffset: 0,
+        parentWidthOffset: 0,
+        toolbar: {
+          show: false
+        },
+        type: 'area'
+      },
+      dataLabels: {
+        enabled: false
+      },
+      stroke: {
+        width: 2,
+        curve: 'smooth'
+      },
+      legend: {
+        show: false
+      },
+      markers: {
+        size: 6,
+        colors: 'transparent',
+        strokeColors: 'transparent',
+        strokeWidth: 4,
+        discrete: [
+          {
+            fillColor: config.colors.white,
+            seriesIndex: 0,
+            dataPointIndex: 7,
+            strokeColor: config.colors.primary,
+            strokeWidth: 2,
+            size: 6,
+            radius: 8
+          }
+        ],
+        hover: {
+          size: 7
+        }
+      },
+      colors: [config.colors.primary,config.colors.warning],
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: shadeColor,
+          shadeIntensity: 0.6,
+          opacityFrom: 0.5,
+          opacityTo: 0.25,
+          stops: [0, 95, 100]
+        }
+      },
+      grid: {
+        borderColor: borderColor,
+        strokeDashArray: 3,
+        padding: {
+          top: -20,
+          bottom: 0,
+          left: 22,
+          right: 5
+        }
+      },
+      xaxis: {
+        categories: [{% for x in sklad %}"{{ x.sene|date:"d.m.Y" }}",{% endfor %}],
+        axisBorder: {
+          show: false
+        },
+        axisTicks: {
+          show: false
+        },
+        labels: {
+          show: true,
+          style: {
+            fontSize: '13px',
+            colors: axisColor
+          },
+          offsetX: 0,
+          offsetY: 0,
+        },
+      },
+      yaxis: {
+        labels: {
+          show: false
+        },
+        //min: 10,
+        //max: 50,
+        //tickAmount: 4
+      }
+    };
+  if (typeof incomeChartEl !== undefined && incomeChartEl !== null) {
+    const incomeChart = new ApexCharts(incomeChartEl, incomeChartConfig);
+    incomeChart.render();
+  }
+
+    // Expenses Mini Chart - Radial Chart
+  // --------------------------------------------------------------------
+  const weeklyExpensesEl = document.querySelector('#myexpensesOfWeek'),
+    weeklyExpensesConfig = {
+      series: [{{gun2.jemi_bahasy|default_if_none:""}}],
+      chart: {
+        width: 100,
+        height: 100,
+        type: 'radialBar'
+      },
+      plotOptions: {
+        radialBar: {
+          startAngle: 0,
+          endAngle: 360,
+          strokeWidth: '8',
+          hollow: {
+            margin: 2,
+            size: '45%'
+          },
+          track: {
+            strokeWidth: '50%',
+            background: borderColor
+          },
+          dataLabels: {
+            show: true,
+            name: {
+              show: false
+            },
+            value: {
+              formatter: function (val) {
+                return 'TMT: ' + parseInt(val);
+              },
+              offsetY: 5,
+              color: '#697a8d',
+              fontSize: '12px',
+              show: true
+            }
+          }
+        }
+      },
+      fill: {
+        type: 'solid',
+        colors: config.colors.primary
+      },
+      stroke: {
+        lineCap: 'round'
+      },
+      grid: {
+        padding: {
+          top: -10,
+          bottom: -15,
+          left: -10,
+          right: -10
+        }
+      },
+      states: {
+        hover: {
+          filter: {
+            type: 'none'
+          }
+        },
+        active: {
+          filter: {
+            type: 'none'
+          }
+        }
+      }
+    };
+  if (typeof weeklyExpensesEl !== undefined && weeklyExpensesEl !== null) {
+    const weeklyExpenses = new ApexCharts(weeklyExpensesEl, weeklyExpensesConfig);
+    weeklyExpenses.render();
+  }
+
+  })();
+  var options = {
+    series: ["{{ajem_m|floatformat:2}}", "{{ajem_d|floatformat:2}}", "{{bjem_m|floatformat:2}}", "{{bjem_d|floatformat:2}}",
+    "{{inw_m|floatformat:2}}","{{inw_d|floatformat:2}}"],
+    chart: {
+    height: 350,
+    type: 'radialBar',
+  },
+  plotOptions: {
+    radialBar: {
+      offsetY: 0,
+      startAngle: 0,
+      endAngle: 270,
+      hollow: {
+        margin: 5,
+        size: '50%',
+        background: 'transparent',
+        image: undefined,
+      },
+      dataLabels: {
+        name: {
+          show: false,
+        },
+        value: {
+          show: false,
+        }
+      }
+    }
+  },
+  
+  labels: ['Algylar TMT', 'Algylar $', 'Bergiler TMT', 'Bergiler $','inwentar jemi TMT','inwentar jemi $'],
+  legend: {
+    show: true,
+    floating: true,
+    fontSize: '14px',
+    position: 'left',
+    offsetX: 20,
+    offsetY: 6,
+    labels: {
+      useSeriesColors: true,
+    },
+    markers: {
+      size: 0
+    },
+    formatter: function(seriesName, opts) {
+      return seriesName + ":  " + opts.w.globals.series[opts.seriesIndex]
+    },
+    itemMargin: {
+      vertical: 3
+    }
+  },
+  responsive: [{
+    breakpoint: 480,
+    options: {
+      legend: {
+          show: false
+      }
+    }
+  }]
+  };
+
+  var chart = new ApexCharts(document.querySelector("#chart"), options);
+  chart.render();
+</script>
+    <div class="content-backdrop fade"></div>
+</div>
+{% endblock content %}
+
+{% include 'include/jig.html' %}

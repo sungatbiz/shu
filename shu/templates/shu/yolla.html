@@ -1,0 +1,66 @@
+{% extends 'shu/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block aside %}
+{% endblock %}
+
+{% block content %}
+<style>
+  .card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+  }
+  
+  .card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  }
+</style>
+<div class="content-wrapper">
+
+    <!-- Content  class="me-4 mb-sm-0 mb-2"-->
+  <div class="container-xxl flex-grow-1 container-p-y">
+      <h4 class="fw-bold py-3 mb-4">{{ title }}</h4>
+      
+      <div class="row mb-5">
+        
+        <div class="col-md-6 col-xl-4">
+          <div class="card bg-primary text-white mb-3" style="height: 150px;">
+            <a href="{% url 'sapak-seh' pkk %}">
+              <div class="card-body text-center" style="padding: 60px;">
+                <h5 class="card-title text-white">Sapak seh</h5>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="col-md-6 col-xl-4">
+          <div class="card bg-primary text-white mb-3" style="height: 150px;">
+            <a href="{% url 'dokma-seh' pkk %}">
+              <div class="card-body text-center" style="padding: 60px;">
+                <h5 class="card-title text-white">Dokma seh</h5>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="col-md-6 col-xl-4">
+          <div class="card bg-primary text-white mb-3" style="height: 150px;">
+            <a href="{% url 'halta-seh' pkk %}">
+              <div class="card-body text-center" style="padding: 60px;">
+                <h5 class="card-title text-white">Halta seh</h5>
+              </div>
+            </a>
+          </div>
+        </div>
+        
+      </div>
+
+    <!-- / Content -->
+  </div>
+
+    <div class="content-backdrop fade"></div>
+</div>
+{% endblock content %}
+
+{% include 'include/jig.html' %}

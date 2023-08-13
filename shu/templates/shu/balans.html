@@ -1,0 +1,351 @@
+{% extends 'shu/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block aside %}
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">SHU / {{ user.office|default_if_none:"" }} /</span> {{ title }}</h4>
+
+      <div class="row">
+        <div class="col-lg-12 mb-4 order-0">
+          <div class="card">
+            <div class="d-flex align-items-center row">
+              <div class="col-sm-8">
+                <div class="card-body" style="padding-left:120px;">
+                  <small>TMT</small><h3 class="card-title"><strong>{{jemleri_m|floatformat:2|default_if_none:""}}</strong></h3>
+                  <small>$</small><h3 class="card-title"><strong>{{jemleri_d|floatformat:2|default_if_none:""}}</strong></h3>
+                </div>
+              </div>
+              <div class="col-sm-3 text-center text-sm-left">
+                <div class="card-body pb-0 px-0 px-md-4">
+                  <img
+                    src="{% static '/assets/img/illustrations/total.png' %}"
+                    height="140"
+                    alt="View Badge User"
+                    data-app-dark-img="{% static 'illustrations/man-with-laptop-dark.png' %}"
+                    data-app-light-img="{% static 'illustrations/man-with-laptop-light.png' %}"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- girdeji çykdaýjy manatda we dollarda -->
+          <div class="col-12">
+            <div class="row">
+              <div class="col-md-6 col-lg-2 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-success.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Jemi Algy</span>
+                    {% if ajem_m > 0 %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2"> {{ajem_m|floatformat:2|default_if_none:""}}</h5>
+                    {% elif ajem_m == 0 or ajem_m != "" %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                    {% if ajem_d > 0 %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2"> {{ajem_d|floatformat:2|default_if_none:""}}</h5>
+                    {% elif ajem_d == 0 or ajem_d != "" %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-2 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-error.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Jemi bergi</span>
+                    {% if bjem_m > 0 %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2"> {{bjem_m|floatformat:2|default_if_none:""}}</h5>
+                    {% elif bjem_m == 0 or bjem_m != "" %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                    {% if bjem_d > 0 %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2"> {{bjem_d|floatformat:2|default_if_none:""}}</h5>
+                    {% elif bjem_d == 0 or bjem_d != "" %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-2 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-primary.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Jemi inwentar</span>
+                    {% if inw_m > 0 %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2"> {{inw_m|floatformat:2|default_if_none:""}}</h5>
+                    {% elif inw_m == 0 or inw_m != "" %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                    {% if inw_d > 0 %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2"> {{inw_d|floatformat:2|default_if_none:""}}</h5>
+                    {% elif inw_d == 0 or inw_d != "" %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-2 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-success.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Galyndy pullar</span>
+                    {% if g_m > 0 %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2"> {{g_m|floatformat:2|default_if_none:""}}</h5>
+                    {% elif g_m == 0 or g_m != "" %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                    {% if g_d > 0 %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2"> {{g_d|floatformat:2|default_if_none:""}}</h5>
+                    {% elif g_d == 0 or g_d != "" %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-2 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-primary.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Galyndy çigmal puly</span>
+                    {% if c_m > 0 %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2"> {{c_m|floatformat:2|default_if_none:""}}</h5>
+                    {% elif c_m == 0 or c_m != "" %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                    {% if c_d > 0 %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2"> {{c_d|floatformat:2|default_if_none:""}}</h5>
+                    {% elif c_d == 0 or c_d != "" %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-2 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-primary.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Galyndy haryt puly</span>
+                    {% if seh_jem_m > 0 %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2"> {{seh_jem_m|floatformat:2|default_if_none:""}}</h5>
+                    {% elif seh_jem_m == 0 or seh_jem_m != "" %}
+                    <small>TMT</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                    {% if seh_jem_d > 0 %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2"> {{seh_jem_d|floatformat:2|default_if_none:""}}</h5>
+                    {% elif seh_jem_d == 0 or seh_jem_d != "" %}
+                    <small>$</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <!-- girdeji çykdaýjy manatda we dollarda -->
+        </div>
+
+  <!-- Balans Rows -->
+    <a><button style="float:right;" onclick="printData()" class="btn rounded-pill btn-icon btn-primary"> <i class="tf-icons bx bx-printer"></i></button>
+    <input class="form-control mb-2" style="width:300px;" id='myInput' onkeyup='myFunction()' type='text' placeholder="Gözle ..."></a>
+    <div class="card" id="printTable">
+      <h5 class="card-header">Jemi hasabatlar (Balans)</h5>
+      <div class="table-responsive text-nowrap">
+        <table class="table table-hover" id="myTable">
+          <thead>
+            <tr>
+              <th>Jemi<br>algy TMT</th>
+              <th>Jemi<br>algy $</th>
+              <th>Jemi<br>bergi TMT</th>
+              <th>Jemi<br>bergi $</th>
+              <th>Jemi<br>inwentar TMT</th>
+              <th>Jemi<br>inwentar $</th>
+              <th>Jemi<br>galyndy TMT</th>
+              <th>Jemi<br>galyndy $</th>
+              <th>Jemi<br>galyndy<br>çigmal TMT</th>
+              <th>Jemi<br>galyndy<br>çigmal $</th>
+              <th>Jemi<br>galyndy<br>haryt TMT</th>
+              <th>Jemi<br>galyndy<br>haryt $</th>
+              <th>Jemi TMT</th>
+              <th>Jemi $</th>
+            </tr>
+          </thead>
+          <tbody class="table-border-bottom-0">
+            <tr>
+              <td><strong>{{ajem_m|floatformat:2|default_if_none:""}}</strong></td>
+              <td><strong>{{ajem_d|floatformat:2|default_if_none:""}}</strong></td>
+              
+              <td><strong>{{bjem_m|floatformat:2|default_if_none:""}}</strong></td>
+              <td><strong>{{bjem_d|floatformat:2|default_if_none:""}}</strong></td>
+              
+              <td><strong>{{inw_m|floatformat:2|default_if_none:""}}</strong></td>
+              <td><strong>{{inw_d|floatformat:2|default_if_none:""}}</strong></td>
+              
+              <td><strong>{{g_m|floatformat:2|default_if_none:""}}</strong></td>
+              <td><strong>{{g_d|floatformat:2|default_if_none:""}}</strong></td>
+
+              <td><strong>{{c_m|floatformat:2|default_if_none:""}}</strong></td>
+              <td><strong>{{c_d|floatformat:2|default_if_none:""}}</strong></td>
+
+              <td><strong>{{seh_jem_m|floatformat:2|default_if_none:""}}</strong></td>
+              <td><strong>{{seh_jem_d|floatformat:2|default_if_none:""}}</strong></td>
+              
+              <td><span class="badge bg-label-success border-light-success me-1"><strong style="color:Green;">{{jemleri_m|floatformat:2|default_if_none:""}}</strong></span></td>
+              <td><span class="badge bg-label-success border-light-success me-1"><strong style="color:Green;">{{jemleri_d|floatformat:2|default_if_none:""}}</strong></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <!--/ Balans Rows -->
+
+  <!-- Paginator -->
+    {% if myuser.paginator.num_pages > 1 %}
+      <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+              {% if myuser.paginator.num_pages != 1 %}
+                  <li class="page-item"><a class="page-link" href="?page=1">{% trans "Birinji" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "Birinji" %}</a></li>
+              {% endif %}
+              {% if myuser.has_previous %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.previous_page_number }}">&laquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+              {% endif %}
+              {% for i in myuser.paginator.page_range %}
+                  {% if myuser.number == i %}
+                      <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">{% trans "(häzirki)" %}</span></a></li>
+                  {% elif myuser.number > i|add:"-5" and myuser.number < i|add:"+5"%}
+                      <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+              {% endfor %}
+              {% if myuser.has_next %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.next_page_number }}">&raquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
+              {% endif %}
+              {% if myuser.paginator.num_pages != myuser.number %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.paginator.num_pages }}">{% trans "soňky" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "soňky" %}</a></li>
+              {% endif %}
+          </ul>
+      </nav>
+    {% endif %}
+
+    {% if ay_h.paginator1.num_pages > 1 %}
+      <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+              {% if ay_h.paginator1.num_pages != 1 %}
+                  <li class="page-item"><a class="page-link" href="?page=1">{% trans "Birinji" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "Birinji" %}</a></li>
+              {% endif %}
+              {% if ay_h.has_previous %}
+                  <li class="page-item"><a class="page-link" href="?page={{ ay_h.previous_page_number }}">&laquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+              {% endif %}
+              {% for i in ay_h.paginator1.page_range %}
+                  {% if ay_h.number == i %}
+                      <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">{% trans "(häzirki)" %}</span></a></li>
+                  {% elif ay_h.number > i|add:"-5" and ay_h.number < i|add:"+5"%}
+                      <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+              {% endfor %}
+              {% if ay_h.has_next %}
+                  <li class="page-item"><a class="page-link" href="?page={{ ay_h.next_page_number }}">&raquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
+              {% endif %}
+              {% if ay_h.paginator1.num_pages != ay_h.number %}
+                  <li class="page-item"><a class="page-link" href="?page={{ ay_h.paginator1.num_pages }}">{% trans "soňky" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "soňky" %}</a></li>
+              {% endif %}
+          </ul>
+      </nav>
+    {% endif %}
+  <!--/ Paginator -->
+
+  <script type="text/javascript">
+    function printData()
+    {
+        var divToPrint = document.getElementById("printTable");
+        var style = "<style>";
+        style = style + "@page { size: A4 landscape; margin-top:5mm;margin-bottom:3mm;margin-left:3mm;margin-right:3mm; }";
+        style = style + "table {width: 100%; font: 10px Times-Roman;}";
+        style = style + "table, th, td {border: solid 1px #000000; border-collapse: collapse;";
+        style = style + "padding: 2px 3px; text-align: center;}";
+        style = style + "</style>";
+
+        newWin= window.open('','','height=700, width=1500');
+        newWin.document.write(style);
+        newWin.document.write(divToPrint.outerHTML);
+        newWin.print();
+        newWin.close();
+    }
+    function myFunction() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        const tableData = tr[i].getElementsByTagName("td");
+        let allTextContent = '';
+        for (let ind = 0; ind < tableData.length; ind++) {
+            allTextContent += tableData[ind].innerText;
+        }
+        
+        if (allTextContent) {
+          if (allTextContent.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    }
+  </script>
+    <!-- / Content -->
+  </div>
+
+    <div class="content-backdrop fade"></div>
+</div>
+{% endblock content %}
+
+{% include 'include/jig.html' %}

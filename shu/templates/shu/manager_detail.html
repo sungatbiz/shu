@@ -1,0 +1,367 @@
+{% extends 'shu/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block menu %}
+<li class="menu-item">
+  <a href="{% url 'managers' %}" class="menu-link">
+    <i class="menu-icon tf-icons bx bx-arrow-back"></i>
+    <div>Yza</div>
+  </a>
+</li>
+{% if user.wez.name == "Admin" %}
+<li class="menu-item">
+  <a href="" class="menu-link layout-menu-toggle" data-bs-toggle="modal" data-bs-target="#exLargeModal">
+    <i class="menu-icon tf-icons bx bx-plus-circle"></i>
+    <div>Klientleriň peýdasyny girizmek</div>
+  </a>
+</li>
+{% endif %}
+{% endblock menu %}
+
+{% block content %}
+<div class="content-wrapper">
+
+  <!-- alert -->
+    {% if form.errors %}
+    <div class="toast-container">
+      <div class="bs-toast toast fade show bg-danger position-absolute "style="right:10px; top:10px;"  role="alert" aria-live="assertive" aria-atomic="true" id="msg">
+        <div class="toast-header">
+          <i class="bx bx-bell me-2"></i>
+          <div class="me-auto fw-semibold">Habarnama!</div>
+          <small>{% now 'd.m.Y' %}</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Ýalňyşlyk: Klientleriň peýdasy girizilmedi
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    
+    {% if messages %}
+    <div class="toast-container">
+      <div class="bs-toast toast fade show bg-success position-absolute "style="right:10px; top:10px;"  role="alert" aria-live="assertive" aria-atomic="true" id="msg">
+        <div class="toast-header">
+          <i class="bx bx-bell me-2"></i>
+          <div class="me-auto fw-semibold">Üstünlikli girizildi!</div>
+          <small>{% now 'd.m.Y' %}</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          {% for message in messages %}
+          {{ message }}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  <!--/ alert -->
+
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">SHU / {{ user.office|default_if_none:"" }} /</span> {{ title }}</h4>
+
+  <!-- Klientleriň peýdasy Rows -->
+    <a><button style="float:right;" onclick="printData()" class="btn rounded-pill btn-icon btn-primary"> <i class="tf-icons bx bx-printer"></i></button>
+    <input class="form-control mb-2 mt-5" style="width:300px;" id='myInput' onkeyup='myFunction()' type='text' placeholder="Gözle ..."></a>
+    <div class="card" id="printTable">
+      <h5 class="card-header">Klientleriň peýdasynyň hasabaty</h5>
+      <div class="table-responsive text-nowrap">
+        <table class="table table-hover" id="myTable">
+          <thead>
+            <tr>
+              {% if user.wez.name == "Admin" %}
+              <th></th>
+              {% endif %}
+              <th>Harydyň<br>ady</th>
+              <th>Şertnama<br>belgisi</th>
+              <th>Harydyň<br>şertnama<br>möçberi</th>
+              <th>Şertnama<br>bahasy TMT</th>
+              <th>Şertnama<br>bahasy $</th>
+              <th>Jemi<BR>Şertnama<br>bahasy TMT</th>
+              <th>Jemi<BR>Şertnama<br>bahasy $</th>
+              <th>Tapawut TMT</th>
+              <th>Tapawut $</th>
+              <th>Jemi<BR>peýda TMT</th>
+              <th>Jemi<BR>peýda $</th>
+              <th>Şertnama<br>sene</th>
+              <th>Bellik</th>
+            </tr>
+          </thead>
+          <tbody class="table-border-bottom-0">
+            {% for deg in myuser %}
+            <tr>
+              {% if user.wez.name == "Admin" %}
+              <td>
+                <a href="{% url 'manager-detail-update' deg.id %}" class="btn btn-icon btn-outline-success">
+                  <span class="tf-icons bx bx-share" data-toggle="tooltip" title="Çykdajyny girizmek"></span>
+                </a>
+              </td>
+              {% endif %}
+              <td><strong>{{deg.harydyn_ady|default_if_none:""}}</strong></td>
+              <td><strong>{{deg.shertnama_nomer|default_if_none:""}}</strong></td>
+              <td><span class="badge bg-label-primary border-light-primary me-1"><strong style="color:Blue;">{{deg.z_sany|floatformat:2|default_if_none:""}}</strong></span></td>
+              <td>{{deg.bahasy_m|floatformat:2|default_if_none:""}}</td>
+              <td>{{deg.bahasy_d|floatformat:2|default_if_none:""}}</td>
+              <td><strong>{{deg.zj_bahasy_m|floatformat:2|default_if_none:""}}</strong></td>
+              <td><strong>{{deg.zj_bahasy_d|floatformat:2|default_if_none:""}}</strong></td>
+              <td><strong>{{deg.tapawut_m|floatformat:2|default_if_none:""}}</strong></td>
+              <td><strong>{{deg.tapawut_d|floatformat:2|default_if_none:""}}</strong></td>
+              <td><span class="badge bg-label-success border-light-success me-1"><strong style="color:Green;">{{deg.peyda_m|floatformat:2|default_if_none:""}}</strong></span></td>
+              <td><span class="badge bg-label-success border-light-success me-1"><strong style="color:Green;">{{deg.peyda_d|floatformat:2|default_if_none:""}}</strong></span></td>
+              <td>{{deg.sene|date:"d.m.Y"}}</td>
+              <td>{{deg.bellik|default_if_none:""}}</td>
+              {% if user.wez.name == "Admin" %}
+              <td>
+                <a href="{% url 'das-klient-edit' deg.id %}" class="btn btn-icon btn-outline-warning">
+                  <span class="tf-icons bx bx-edit" data-toggle="tooltip" title="{% trans "üýtgetmek" %}"></span>
+                </a>
+                <a href="{% url 'das-klient-delete' deg.id %}" class="btn btn-icon btn-outline-danger">
+                  <i class="tf-icons bx bx-trash" data-toggle="tooltip" title="{% trans "pozmak" %}"></i>
+                </a>
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <!--/ Klientleriň peýdasy Rows -->
+
+  <!-- Klientleriň cykdajysy Rows -->
+    <a><button style="float:right;" onclick="printData1()" class="btn rounded-pill btn-icon btn-primary"> <i class="tf-icons bx bx-printer"></i></button>
+    <input class="form-control mb-2 mt-5" style="width:300px;" id='myInput1' onkeyup='myFunction1()' type='text' placeholder="Gözle ..."></a>
+    <div class="card mb-5" id="printTable1">
+      <h5 class="card-header">Klientleriň çykdajylarynyň hasabaty</h5>
+      <div class="table-responsive text-nowrap">
+        <table class="table table-hover" id="myTable1">
+          <thead>
+            <tr>
+              <th>Harydyň<br>ady</th>
+              <th>Şertnama<br>belgisi</th>
+              <th>Işlenen<br>harydyň<br>möçberi</th>
+              <th>Işlenen<BR>jemi<br>bahasy TMT</th>
+              <th>Işlenen<BR>jemi<br>bahasy $</th>
+              <th>Jemi<BR>çykdajy TMT</th>
+              <th>Jemi<BR>çykdajy $</th>
+              <th>senesi</th>
+              <th>Bellik</th>
+            </tr>
+          </thead>
+          <tbody class="table-border-bottom-0">
+            {% for deg in cykdajy %}
+            <tr>
+              <td><strong>{{deg.harydyn_ady|default_if_none:""}}</strong></td>
+              <td><strong>{{deg.shertnama_nomer|default_if_none:""}}</strong></td>
+              <td><span class="badge bg-label-primary border-light-primary me-1"><strong style="color:Blue;">{{deg.i_sany|floatformat:2|default_if_none:""}}</td>
+              <td><strong>{{deg.j_bahasy_m|floatformat:2|default_if_none:""}}</strong></td>
+              <td><strong>{{deg.j_bahasy_d|floatformat:2|default_if_none:""}}</strong></td>
+              <td><span class="badge bg-label-danger border-light-danger me-1"><strong style="color:Red;">{{deg.cykdajy_m|floatformat:2|default_if_none:""}}</strong></span></td>
+              <td><span class="badge bg-label-danger border-light-danger me-1"><strong style="color:Red;">{{deg.cykdajy_d|floatformat:2|default_if_none:""}}</strong></span></td>
+              <td>{{deg.sene|date:"d.m.Y"}}</td>
+              <td>{{deg.bellik|default_if_none:""}}</td>
+              {% if user.wez.name == "Admin" %}
+              <td>
+                <a href="{% url 'klient-cykdajy-edit' deg.id %}" class="btn btn-icon btn-outline-warning">
+                  <span class="tf-icons bx bx-edit" data-toggle="tooltip" title="{% trans "üýtgetmek" %}"></span>
+                </a>
+                <a href="{% url 'klient-cykdajy-delete' deg.id %}" class="btn btn-icon btn-outline-danger">
+                  <i class="tf-icons bx bx-trash" data-toggle="tooltip" title="{% trans "pozmak" %}"></i>
+                </a>
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <!--/ Klientleriň cykdajysy Rows -->
+
+  <!--  Klientleriň peýdasy insert -->
+    <div class="modal fade" id="exLargeModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+          <form method="post" enctype="multipart/form-data">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel4">Klientleriň peýdasyny girizmek</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                {% csrf_token %}
+                {{ form|crispy }}
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Çykyş</button>
+              <button type="submit" class="btn btn-primary">Tassyklamak</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      </div>
+    </div>
+  <!-- / Klientleriň peýdasy insert -->
+
+  <!-- Paginator -->
+    {% if myuser.paginator.num_pages > 1 %}
+      <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+              {% if myuser.paginator.num_pages != 1 %}
+                  <li class="page-item"><a class="page-link" href="?page=1">{% trans "Birinji" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "Birinji" %}</a></li>
+              {% endif %}
+              {% if myuser.has_previous %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.previous_page_number }}">&laquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+              {% endif %}
+              {% for i in myuser.paginator.page_range %}
+                  {% if myuser.number == i %}
+                      <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">{% trans "(häzirki)" %}</span></a></li>
+                  {% elif myuser.number > i|add:"-5" and myuser.number < i|add:"+5"%}
+                      <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+              {% endfor %}
+              {% if myuser.has_next %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.next_page_number }}">&raquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
+              {% endif %}
+              {% if myuser.paginator.num_pages != myuser.number %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.paginator.num_pages }}">{% trans "soňky" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "soňky" %}</a></li>
+              {% endif %}
+          </ul>
+      </nav>
+    {% endif %}
+
+    {% if ay_h.paginator1.num_pages > 1 %}
+      <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+              {% if ay_h.paginator1.num_pages != 1 %}
+                  <li class="page-item"><a class="page-link" href="?page=1">{% trans "Birinji" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "Birinji" %}</a></li>
+              {% endif %}
+              {% if ay_h.has_previous %}
+                  <li class="page-item"><a class="page-link" href="?page={{ ay_h.previous_page_number }}">&laquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+              {% endif %}
+              {% for i in ay_h.paginator1.page_range %}
+                  {% if ay_h.number == i %}
+                      <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">{% trans "(häzirki)" %}</span></a></li>
+                  {% elif ay_h.number > i|add:"-5" and ay_h.number < i|add:"+5"%}
+                      <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+              {% endfor %}
+              {% if ay_h.has_next %}
+                  <li class="page-item"><a class="page-link" href="?page={{ ay_h.next_page_number }}">&raquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
+              {% endif %}
+              {% if ay_h.paginator1.num_pages != ay_h.number %}
+                  <li class="page-item"><a class="page-link" href="?page={{ ay_h.paginator1.num_pages }}">{% trans "soňky" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "soňky" %}</a></li>
+              {% endif %}
+          </ul>
+      </nav>
+    {% endif %}
+  <!--/ Paginator -->
+
+  <script type="text/javascript">
+    function printData()
+    {
+        var divToPrint = document.getElementById("printTable");
+        var style = "<style>";
+        style = style + "@page { size: A4 landscape; margin-top:5mm;margin-bottom:3mm;margin-left:3mm;margin-right:3mm; }";
+        style = style + "table {width: 100%; font: 10px Times-Roman;}";
+        style = style + "table, th, td {border: solid 1px #000000; border-collapse: collapse;";
+        style = style + "padding: 2px 3px; text-align: center;}";
+        style = style + "</style>";
+
+        newWin= window.open('','','height=700, width=1500');
+        newWin.document.write(style);
+        newWin.document.write(divToPrint.outerHTML);
+        newWin.print();
+        newWin.close();
+    }
+    function printData1()
+    {
+        var divToPrint = document.getElementById("printTable1");
+        var style = "<style>";
+        style = style + "@page { size: A4 landscape; margin-top:5mm;margin-bottom:3mm;margin-left:3mm;margin-right:3mm; }";
+        style = style + "table {width: 100%; font: 10px Times-Roman;}";
+        style = style + "table, th, td {border: solid 1px #000000; border-collapse: collapse;";
+        style = style + "padding: 2px 3px; text-align: center;}";
+        style = style + "</style>";
+
+        newWin= window.open('','','height=700, width=1500');
+        newWin.document.write(style);
+        newWin.document.write(divToPrint.outerHTML);
+        newWin.print();
+        newWin.close();
+    }
+    
+    function myFunction() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        const tableData = tr[i].getElementsByTagName("td");
+        let allTextContent = '';
+        for (let ind = 0; ind < tableData.length; ind++) {
+            allTextContent += tableData[ind].innerText;
+        }
+        
+        if (allTextContent) {
+          if (allTextContent.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    }
+    function myFunction1() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput1");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable1");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        const tableData = tr[i].getElementsByTagName("td");
+        let allTextContent = '';
+        for (let ind = 0; ind < tableData.length; ind++) {
+            allTextContent += tableData[ind].innerText;
+        }
+        
+        if (allTextContent) {
+          if (allTextContent.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    }
+  </script>
+    <!-- / Content -->
+  </div>
+
+    <div class="content-backdrop fade"></div>
+</div>
+{% endblock content %}
+
+{% include 'include/jig.html' %}

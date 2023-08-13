@@ -1,0 +1,310 @@
+{% extends 'shu/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block menu %}
+<li class="menu-item">
+  <a href="{% url 'bank-users' pkk %}" class="menu-link">
+    <i class="menu-icon tf-icons bx bx-arrow-back"></i>
+    <div>Yza</div>
+  </a>
+</li>
+{% if user.wez.name == "Admin" %}
+<li class="menu-item">
+  <a href="" class="menu-link layout-menu-toggle" data-bs-toggle="modal" data-bs-target="#exLargeModal">
+    <i class="menu-icon tf-icons bx bx-plus-circle"></i>
+    <div>Täze bank hereketini girizmek</div>
+  </a>
+</li>
+{% endif %}
+{% endblock menu %}
+
+{% block content %}
+<div class="content-wrapper">
+
+  <!-- alert -->
+    {% if form.errors %}
+    <div class="toast-container">
+      <div class="bs-toast toast fade show bg-danger position-absolute "style="right:10px; top:10px;"  role="alert" aria-live="assertive" aria-atomic="true" id="msg">
+        <div class="toast-header">
+          <i class="bx bx-bell me-2"></i>
+          <div class="me-auto fw-semibold">Habarnama!</div>
+          <small>{% now 'd.m.Y' %}</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Ýalňyşlyk: Bank hereketi girizilmedi
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    
+    {% if messages %}
+    <div class="toast-container">
+      <div class="bs-toast toast fade show bg-success position-absolute "style="right:10px; top:10px;"  role="alert" aria-live="assertive" aria-atomic="true" id="msg">
+        <div class="toast-header">
+          <i class="bx bx-bell me-2"></i>
+          <div class="me-auto fw-semibold">Üstünlikli girizildi!</div>
+          <small>{% now 'd.m.Y' %}</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          {% for message in messages %}
+          {{ message }}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  <!--/ alert -->
+
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">SHU / {{ user.office|default_if_none:"" }} /</span> {{ title }}</h4>
+
+      <!-- girdeji çykdaýjy manatda we dollarda -->
+        <div class="col-12">
+          <div class="row">
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0">
+                      <img src="{% static 'assets/img/icons/unicons/cc-success.png' %}" alt="Credit Card" class="rounded" />
+                    </div>
+                  </div>
+                  <span class="fw-semibold d-block mb-3">Jemi Gelen pul</span>
+                  {% if hasap.gelen > 0 %}
+                  <small>{{bankwal}}</small><h5 class="card-title text-nowrap mb-2"> {{hasap.gelen|floatformat:2|default_if_none:""}}</h5>
+                  {% elif hasap.gelen == 0 or hasap.gelen != "" %}
+                  <small>{{bankwal}}</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0">
+                      <img src="{% static 'assets/img/icons/unicons/cc-error.png' %}" alt="Credit Card" class="rounded" />
+                    </div>
+                  </div>
+                  <span class="fw-semibold d-block mb-3">Jemi Giden pul</span>
+                  {% if hasap.giden > 0 %}
+                  <small>{{bankwal}}</small><h5 class="card-title text-nowrap mb-2"> {{hasap.giden|floatformat:2|default_if_none:""}}</h5>
+                  {% elif hasap.giden == 0 or hasap.giden != "" %}
+                  <small>{{bankwal}}</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0">
+                      <img src="{% static 'assets/img/icons/unicons/cc-primary.png' %}" alt="Credit Card" class="rounded" />
+                    </div>
+                  </div>
+                  <span class="fw-semibold d-block mb-3">Jemi galyndy</span>
+                  <small>{{bankwal}}</small><h5 class="card-title text-nowrap mb-2"> {{hasap.total|floatformat:2|default_if_none:"00.00"}}</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <!-- girdeji çykdaýjy manatda we dollarda -->
+      
+  <!-- Bank hereketi Rows -->
+    <a><button style="float:right;" onclick="printData()" class="btn rounded-pill btn-icon btn-primary"> <i class="tf-icons bx bx-printer"></i></button>
+    <input class="form-control mb-2" style="width:300px;" id='myInput' onkeyup='myFunction()' type='text' placeholder="Gözle ..."></a>
+    <div class="card" id="printTable">
+      <h5 class="card-header">Bank hereketleriň hasabaty</h5>
+      <div class="table-responsive text-nowrap">
+        <table class="table table-hover" id="myTable">
+          <thead>
+            <tr>
+              <th>Walýutasy</th>
+              <th>Walýutanyň<br>hasap<br>belgisi</th>
+              <th>Jemi<br>gelen pul</th>
+              <th>Jemi<br>giden pul</th>
+              <th>senesi</th>
+              <th>Sebäbi</th>
+              <th>Bellik</th>
+            </tr>
+          </thead>
+          <tbody class="table-border-bottom-0">
+            {% for deg in myuser %}
+            <tr>
+              <td><strong>{{deg.wal|default_if_none:""}}</strong></td>
+              <td><strong>{{deg.shet_nomer|default_if_none:""}}</strong></td>
+              <td><span class="badge bg-label-success border-light-success me-1"><strong style="color:Green;">{{deg.g_summa|floatformat:2|default_if_none:""}}</strong></span></td>
+              <td><span class="badge bg-label-danger border-light-danger me-1"><strong style="color:Red;">{{deg.c_summa|floatformat:2|default_if_none:""}}</strong></span></td>
+              <td>{{deg.sene|date:"d.m.Y"}}</td>
+              <td>{{deg.sebap|default_if_none:""}}</td>
+              <td>{{deg.bellik|default_if_none:""}}</td>
+              {% if user.wez.name == "Admin" %}
+              <td>
+                <a href="{% url 'bank-edit' deg.id %}" class="btn btn-icon btn-outline-warning">
+                  <span class="tf-icons bx bx-edit" data-toggle="tooltip" title="{% trans "üýtgetmek" %}"></span>
+                </a>
+                <a href="{% url 'bank-delete' deg.id %}" class="btn btn-icon btn-outline-danger">
+                  <i class="tf-icons bx bx-trash" data-toggle="tooltip" title="{% trans "pozmak" %}"></i>
+                </a>
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <!--/ Bank hereketi Rows -->
+
+  <!--  Bank hereket insert -->
+    <div class="modal fade" id="exLargeModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+          <form method="post" enctype="multipart/form-data">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel4">Täze bank hereketini girizmek</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                {% csrf_token %}
+                {{ form|crispy }}
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Çykyş</button>
+              <button type="submit" class="btn btn-primary">Tassyklamak</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      </div>
+    </div>
+  <!-- / Bank hereket insert -->
+
+  <!-- Paginator -->
+    {% if myuser.paginator.num_pages > 1 %}
+      <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+              {% if myuser.paginator.num_pages != 1 %}
+                  <li class="page-item"><a class="page-link" href="?page=1">{% trans "Birinji" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "Birinji" %}</a></li>
+              {% endif %}
+              {% if myuser.has_previous %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.previous_page_number }}">&laquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+              {% endif %}
+              {% for i in myuser.paginator.page_range %}
+                  {% if myuser.number == i %}
+                      <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">{% trans "(häzirki)" %}</span></a></li>
+                  {% elif myuser.number > i|add:"-5" and myuser.number < i|add:"+5"%}
+                      <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+              {% endfor %}
+              {% if myuser.has_next %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.next_page_number }}">&raquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
+              {% endif %}
+              {% if myuser.paginator.num_pages != myuser.number %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.paginator.num_pages }}">{% trans "soňky" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "soňky" %}</a></li>
+              {% endif %}
+          </ul>
+      </nav>
+    {% endif %}
+
+    {% if ay_h.paginator1.num_pages > 1 %}
+      <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+              {% if ay_h.paginator1.num_pages != 1 %}
+                  <li class="page-item"><a class="page-link" href="?page=1">{% trans "Birinji" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "Birinji" %}</a></li>
+              {% endif %}
+              {% if ay_h.has_previous %}
+                  <li class="page-item"><a class="page-link" href="?page={{ ay_h.previous_page_number }}">&laquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+              {% endif %}
+              {% for i in ay_h.paginator1.page_range %}
+                  {% if ay_h.number == i %}
+                      <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">{% trans "(häzirki)" %}</span></a></li>
+                  {% elif ay_h.number > i|add:"-5" and ay_h.number < i|add:"+5"%}
+                      <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+              {% endfor %}
+              {% if ay_h.has_next %}
+                  <li class="page-item"><a class="page-link" href="?page={{ ay_h.next_page_number }}">&raquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
+              {% endif %}
+              {% if ay_h.paginator1.num_pages != ay_h.number %}
+                  <li class="page-item"><a class="page-link" href="?page={{ ay_h.paginator1.num_pages }}">{% trans "soňky" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "soňky" %}</a></li>
+              {% endif %}
+          </ul>
+      </nav>
+    {% endif %}
+  <!--/ Paginator -->
+
+  <script type="text/javascript">
+    function printData()
+    {
+        var divToPrint = document.getElementById("printTable");
+        var style = "<style>";
+        style = style + "@page { size: A4 landscape; margin-top:5mm;margin-bottom:3mm;margin-left:3mm;margin-right:3mm; }";
+        style = style + "table {width: 100%; font: 10px Times-Roman;}";
+        style = style + "table, th, td {border: solid 1px #000000; border-collapse: collapse;";
+        style = style + "padding: 2px 3px; text-align: center;}";
+        style = style + "</style>";
+
+        newWin= window.open('','','height=700, width=1500');
+        newWin.document.write(style);
+        newWin.document.write(divToPrint.outerHTML);
+        newWin.print();
+        newWin.close();
+    }
+    function myFunction() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        const tableData = tr[i].getElementsByTagName("td");
+        let allTextContent = '';
+        for (let ind = 0; ind < tableData.length; ind++) {
+            allTextContent += tableData[ind].innerText;
+        }
+        
+        if (allTextContent) {
+          if (allTextContent.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    }
+  </script>
+    <!-- / Content -->
+  </div>
+
+    <div class="content-backdrop fade"></div>
+</div>
+{% endblock content %}
+
+{% include 'include/jig.html' %}

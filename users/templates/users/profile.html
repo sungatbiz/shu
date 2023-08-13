@@ -1,0 +1,424 @@
+{% extends 'shu/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block menu %}
+{% comment %} <li class="menu-item">
+  <a href="{% url 'hasaphana' %}" class="menu-link">
+    <i class="menu-icon tf-icons bx bx-money"></i>
+    <div>Bölek hasaplar</div>
+  </a>
+</li> {% endcomment %}
+{% endblock menu %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">SHU /</span> {{ title }}</h4>
+        
+    <!-- Account -->
+      <div class="card mb-4">
+        <h5 class="card-header">ŞAHSY MAGLUMATY</h5>
+        <hr class="my-0" />
+        <div class="card-body">
+          <div class="row">
+            <div class="mb-3 col-md-2">
+              <img src="{{ user.image.url }}" alt="user-avatar" class="d-block rounded" height="150" width="150" id="image">
+            </div>
+            <div class="col-md-5 col-lg-5 mb-3">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between flex-sm-row flex-column gap-3">
+                    <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
+                      <div class="card-title">
+                        <h5 class="text-success text-nowrap fw-semibold">Girdeji</h5>
+                      </div>
+                      <div class="fw-semibold d-block">
+                        {% if total != None %}
+                        <small>TMT</small><h5 class="card-title text-nowrap mb-2"> {{total|floatformat:2|default_if_none:""}}</h5>
+                        {% else %}
+                        <small>TMT</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                        {% endif %}
+                        {% if total_d != None %}
+                        <small>$</small><h5 class="card-title text-nowrap mb-2"> {{total_d|floatformat:2|default_if_none:""}}</h5>
+                        {% else %}
+                        <small>$</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div id="profileReportChart1"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-5 col-lg-5 mb-3">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between flex-sm-row flex-column gap-3">
+                    <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
+                      <div class="card-title">
+                        <h5 class="text-warning text-nowrap fw-semibold">Çykdajy</h5>
+                      </div>
+                      <div class="fw-semibold d-block">
+                        {% if total_cyk != None %}
+                        <small>TMT</small><h5 class="card-title text-nowrap mb-2"> {{total_cyk|floatformat:2|default_if_none:""}}</h5>
+                        {% else %}
+                        <small>TMT</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                        {% endif %}
+                        {% if total_cyk_d != None %}
+                        <small>$</small><h5 class="card-title text-nowrap mb-2"> {{total_cyk_d|floatformat:2|default_if_none:""}}</h5>
+                        {% else %}
+                        <small>$</small><h5 class="card-title text-nowrap mb-2">00.00</h5>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div id="profileReportChart2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3 col-md-6">
+              Ady: <strong> {{user.first_name}}</strong>
+            </div>
+            <div class="mb-3 col-md-6">
+              Familiýasy: <strong> {{user.last_name}}</strong>
+            </div>
+            <div class="mb-3 col-md-6">
+              Atasynyň ady: <strong> {{user.middle_name|default_if_none:""}}</strong>
+            </div>
+            <div class="mb-3 col-md-6">
+              E-mail: <strong> {{user.email}}</strong>
+            </div>
+            <div class="mb-3 col-md-6">
+              Telefon belgisi: <strong> {{user.tel|default_if_none:""}}</strong>
+            </div>
+            <div class="mb-3 col-md-6">
+              Öý salgysy: <strong> {{user.address|default_if_none:""}}</strong>
+            </div>
+            <div class="mb-3 col-md-6">
+              Office ýerlişýän ýeri: <strong> {{user.office}}</strong>
+            </div>
+            <div class="mb-3 col-md-6">
+              Bölümi: <strong> {{user.bolum}}</strong>
+            </div>
+            <div class="mb-3 col-md-6">
+              Wezipesi: <strong> {{user.wez}}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    <!-- /Account -->
+
+    <!-- wagtlayyn ugradys hasap Rows -->
+      {% for x in oj %}
+      {% if x.u_came_id == user and x.tassyk == 0 %}
+        {% csrf_token %}
+        <div class="card mb-5 mt-5">
+          <h5 class="card-header" style="background-color: yellow;">Tassyklamak: <small> pul geçirimleri</small></h5>
+              <div class="table-responsive text-nowrap">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Ugradyjy</th>
+                      <th>Senesi</th>
+                      <th>Pul<br>möçberi TMT</th>
+                      <th>Pul<br>möçberi $</th>
+                      <th>Awans TMT</th>
+                      <th>Awans $</th>
+                      <th>Sebäbi</th>
+                      <th>Bellik</th>
+                      <th>Hereket</th>
+                    </tr>
+                  </thead>
+                  <tbody class="table-border-bottom-0">
+                    {% for deg in oj %}
+                    {% if deg.u_came_id == user and deg.tassyk == 0 %}
+                    <tr>
+                      <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{deg.u_sent_id.last_name|default_if_none:""}} {{deg.u_sent_id.first_name|default_if_none:""}}</strong></td>
+                      <td>{{deg.sene|date:"d-m-Y"|default_if_none:""}}</td>
+                      <td><strong>{{deg.cash|floatformat:2|default_if_none:""}}</strong></td>
+                      <td><strong>{{deg.cash_d|floatformat:2|default_if_none:""}}</strong></td>
+                      <td><strong>{{deg.awans_m|floatformat:2|default_if_none:""}}</strong></td>
+                      <td><strong>{{deg.awans_d|floatformat:2|default_if_none:""}}</strong></td>
+                      <td><span class="badge bg-label-primary me-1">{{deg.sebap|wordwrap:16|linebreaksbr|default_if_none:""}}</span></td>
+                      <td>{{deg.bellik|wordwrap:16|linebreaksbr|default_if_none:""}}</td>
+                      <td>
+                        <a href="{% url 'ojidanie-update' deg.id %}" class="btn btn-outline-success">Tassyklamak</a>
+                        <a class="btn btn-outline-danger" href="{% url 'oj-delete' deg.id %}">Inkär etmek</a>
+                      </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+        </div>
+      {% endif %}
+      {% endfor %}
+    <!--/ wagtlayyn ugradys hasap Rows -->
+    
+    <!-- Bolek hasaplar Rows -->
+      <a><button style="float:right;" onclick="printData()" class="btn rounded-pill btn-icon btn-primary"> <i class="tf-icons bx bx-printer"></i></button>
+      <input class="form-control mb-2" style="width:300px;" id='myInput' onkeyup='myFunction()' type='text' placeholder="Gözle ..."></a>
+      <div class="card" id="printTable">
+        <h5 class="card-header">Bölek hasaplar</h5>
+        <div class="table-responsive text-nowrap">
+          <table class="table table-striped" id="myTable">
+            <thead>
+              <tr>
+                <th>Ulanyjy</th>
+                <th>Sene</th>
+                <th>Girdeji manat</th>
+                <th>Girdeji $</th>
+                <th>Çykdajy manat</th>
+                <th>Çykdajy $</th>
+                <th>Awans</th>
+                <th>Sebäbi</th>
+                <th>Bellik</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+              {% for deg in myuser %}
+              <tr>
+                {% if deg.user != None %}
+                <td><strong>{{deg.user.last_name}} {{deg.user.first_name}}</strong></td>
+                {% else %}
+                <td><strong>{{deg.user_sent.last_name}} {{deg.user_sent.first_name}}</strong></td>
+                {% endif %}
+                <td>{{deg.sene|date:"d.m.Y"}}</td>
+                <td><span class="badge bg-label-success border-light-success me-1"><strong style="color:Green;">{{deg.girdeji|floatformat:2|default_if_none:""}}</strong></span></td>
+                <td><span class="badge bg-label-success border-light-success me-1"><strong style="color:Green;">{{deg.girdeji_dollar|floatformat:2|default_if_none:""}}</strong></span></td>
+                <td><span class="badge bg-label-danger border-light-danger me-1"><strong style="color:Red;">{{deg.cykdajy|floatformat:2|default_if_none:""}}</strong></span></td>
+                <td><span class="badge bg-label-danger border-light-danger me-1"><strong style="color:Red;">{{deg.cykdajy_dollar|floatformat:2|default_if_none:""}}</strong></span></td>
+                <td><strong>{{deg.awans_m|floatformat:2|default_if_none:""}}</strong></td>
+                <td><strong>{{deg.awans_d|floatformat:2|default_if_none:""}}</strong></td>
+                <td>{{deg.sebap|wordwrap:16|linebreaksbr|default_if_none:""}}</td>
+                <td>{{deg.bellik|wordwrap:30|default_if_none:""}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <!--/ Bolek hasaplar Rows -->
+    
+    </div>
+</div>
+
+<!-- Paginator -->
+    {% if myuser.paginator.num_pages > 1 %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if myuser.paginator.num_pages != 1 %}
+                <li class="page-item"><a class="page-link" href="?page=1">{% trans "Birinji" %}</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">{% trans "Birinji" %}</a></li>
+            {% endif %}
+            {% if myuser.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ myuser.previous_page_number }}">&laquo;</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+            {% endif %}
+            {% for i in myuser.paginator.page_range %}
+                {% if myuser.number == i %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">{% trans "(häzirki)" %}</span></a></li>
+                {% elif myuser.number > i|add:"-5" and myuser.number < i|add:"+5"%}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if myuser.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ myuser.next_page_number }}">&raquo;</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
+            {% endif %}
+            {% if myuser.paginator.num_pages != myuser.number %}
+                <li class="page-item"><a class="page-link" href="?page={{ myuser.paginator.num_pages }}">{% trans "soňky" %}</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">{% trans "soňky" %}</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+<!--/ Paginator -->
+
+<script type="text/javascript">
+    function printData()
+    {
+      var divToPrint = document.getElementById("printTable");
+      var style = "<style>";
+      style = style + "@page { size: A4 landscape; margin-top:5mm;margin-bottom:3mm;margin-left:3mm;margin-right:3mm; }";
+      style = style + "table {width: 100%; font: 10px Times-Roman;}";
+      style = style + "table, th, td {border: solid 1px #000000; border-collapse: collapse;";
+      style = style + "padding: 2px 3px; text-align: center;}";
+      style = style + "</style>";
+      newWin= window.open('','','height=700, width=1500');
+      newWin.document.write(style);
+      newWin.document.write(divToPrint.outerHTML);
+      newWin.print();
+      newWin.close();
+    }
+    function myFunction() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("myTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      const tableData = tr[i].getElementsByTagName("td");
+      let allTextContent = '';
+      for (let ind = 0; ind < tableData.length; ind++) {
+          allTextContent += tableData[ind].innerText;
+      }
+      if (allTextContent) {
+        if (allTextContent.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }       
+    }
+    }
+</script>
+<!-- / Content -->
+
+<div class="content-backdrop fade"></div>
+<script>
+  const profileReportChartEl1 = document.querySelector('#profileReportChart1'),
+  profileReportChartConfig1 = {
+    chart: {
+      height: 80,
+      // width: 175,
+      type: 'line',
+      toolbar: {
+        show: false
+      },
+      dropShadow: {
+        enabled: true,
+        top: 10,
+        left: 5,
+        blur: 3,
+        color: config.colors.success,
+        opacity: 0.15
+      },
+      sparkline: {
+        enabled: true
+      }
+    },
+    grid: {
+      show: false,
+      padding: {
+        right: 8
+      }
+    },
+    colors: [config.colors.success],
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      width: 5,
+      curve: 'smooth'
+    },
+    series: [
+      {
+        name: 'girdejisi TMT',
+        data: [{% for deg in b_has %} {% if deg.girdeji != None %} "{{ deg.girdeji|floatformat:2|default_if_none:"" }}", {% else %} 0, {% endif %} {% endfor %}]
+      },
+      {
+        name: 'girdejisi $',
+        data: [{% for deg in b_has %} {% if deg.girdeji_dollar != None %} "{{ deg.girdeji_dollar|floatformat:2|default_if_none:"" }}", {% else %} 0, {% endif %} {% endfor %}]
+      }
+    ],
+    xaxis: {
+      show: false,
+      lines: {
+        show: false
+      },
+      labels: {
+        show: false
+      },
+      axisBorder: {
+        show: false
+      }
+    },
+    yaxis: {
+      show: false
+    }
+  };
+if (typeof profileReportChartEl1 !== undefined && profileReportChartEl1 !== null) {
+  const profileReportChart1 = new ApexCharts(profileReportChartEl1, profileReportChartConfig1);
+  profileReportChart1.render();
+}
+
+const profileReportChartEl2 = document.querySelector('#profileReportChart2'),
+  profileReportChartConfig2 = {
+    chart: {
+      height: 80,
+      // width: 175,
+      type: 'line',
+      toolbar: {
+        show: false
+      },
+      dropShadow: {
+        enabled: true,
+        top: 10,
+        left: 5,
+        blur: 3,
+        color: config.colors.warning,
+        opacity: 0.15
+      },
+      sparkline: {
+        enabled: true
+      }
+    },
+    grid: {
+      show: false,
+      padding: {
+        right: 8
+      }
+    },
+    colors: [config.colors.warning],
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      width: 5,
+      curve: 'smooth'
+    },
+    series: [
+      {
+        name: 'çykdajysy TMT',
+        data: [{% for deg in b_has %} {% if deg.cykdajy != None %} "{{ deg.cykdajy|floatformat:2|default_if_none:"" }}", {% else %} 0, {% endif %} {% endfor %}]
+      },
+      {
+        name: 'çykdajysy $',
+        data: [{% for deg in b_has %} {% if deg.cykdajy_dollar != None %} "{{ deg.cykdajy_dollar|floatformat:2|default_if_none:"" }}", {% else %} 0, {% endif %} {% endfor %}]
+      }
+    ],
+    xaxis: {
+      show: false,
+      lines: {
+        show: false
+      },
+      labels: {
+        show: false
+      },
+      axisBorder: {
+        show: false
+      }
+    },
+    yaxis: {
+      show: false
+    }
+  };
+if (typeof profileReportChartEl2 !== undefined && profileReportChartEl2 !== null) {
+  const profileReportChart2 = new ApexCharts(profileReportChartEl2, profileReportChartConfig2);
+  profileReportChart2.render();
+}
+</script>
+
+{% endblock content %}
+
+{% include 'include/jig.html' %}

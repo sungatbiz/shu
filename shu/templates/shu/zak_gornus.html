@@ -1,0 +1,5 @@
+{% load i18n %}
+{% comment %} <option value="">{% trans "Zakazyn belgisini saýlaň" %}</option> {% endcomment %}
+{% for deg in z_g %}
+<option value="{{ deg.pk }}">{{ deg.name }}</option>
+{% endfor %}

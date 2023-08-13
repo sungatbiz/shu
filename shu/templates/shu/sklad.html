@@ -1,0 +1,626 @@
+{% extends 'shu/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block menu %}
+<li class="menu-item">
+  <a href="{% url 'dashboard' %}" class="menu-link">
+    <i class="menu-icon tf-icons bx bx-arrow-back"></i>
+    <div>Yza</div>
+  </a>
+</li>
+{% if user.wez.name == "Admin" %}
+<li class="menu-item">
+  <a href="" class="menu-link layout-menu-toggle" data-bs-toggle="modal" data-bs-target="#exLargeModal">
+    <i class="menu-icon tf-icons bx bx-plus-circle"></i>
+    <div>Sklada gelen täze harydy girizmek</div>
+  </a>
+</li>
+{% endif %}
+<li class="menu-item">
+  <a href="{% url 'sklad-sapak-seh' %}" class="menu-link">
+    <i class="menu-icon tf-icons bx bx-layer"></i>
+    <div>Sapak seh</div>
+  </a>
+</li>
+<li class="menu-item">
+  <a href="{% url 'sklad-dokma-seh' %}" class="menu-link">
+    <i class="menu-icon tf-icons bx bx-layer"></i>
+    <div>Dokma seh</div>
+  </a>
+</li>
+<li class="menu-item">
+  <a href="{% url 'sklad-halta-seh' %}" class="menu-link">
+    <i class="menu-icon tf-icons bx bx-layer"></i>
+    <div>Halta seh</div>
+  </a>
+</li>
+<li class="menu-item">
+  <a href="{% url 'sklad-das-zawod' %}" class="menu-link">
+    <i class="menu-icon tf-icons bx bx-archive"></i>
+    <div>Daşyndan işleşilýän zawod</div>
+  </a>
+</li>
+{% endblock menu %}
+
+{% block content %}
+<div class="content-wrapper">
+
+  <!-- alert -->
+    {% if form.errors %}
+    <div class="toast-container">
+      <div class="bs-toast toast fade show bg-danger position-absolute "style="right:10px; top:10px;"  role="alert" aria-live="assertive" aria-atomic="true" id="msg">
+        <div class="toast-header">
+          <i class="bx bx-bell me-2"></i>
+          <div class="me-auto fw-semibold">Habarnama!</div>
+          <small>{% now 'd.m.Y' %}</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Ýalňyşlyk: Sklada gelen täze haryt girizilmedi
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    
+    {% if messages %}
+    <div class="toast-container">
+      <div class="bs-toast toast fade show bg-success position-absolute "style="right:10px; top:10px;"  role="alert" aria-live="assertive" aria-atomic="true" id="msg">
+        <div class="toast-header">
+          <i class="bx bx-bell me-2"></i>
+          <div class="me-auto fw-semibold">Üstünlikli girizildi!</div>
+          <small>{% now 'd.m.Y' %}</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          {% for message in messages %}
+          {{ message }}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  <!--/ alert -->
+
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">SHU / {{ user.office|default_if_none:"" }} /</span> {{ title }}</h4>
+      
+      <div class="row">
+        <!-- jemi TMT we $ -->
+          <div class="col-12">
+            <div class="row">
+              <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-success.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Jemi harydyň sany boýunça bahasy</span>
+                    {% if jemler.san_m > 0 %}
+                    <small>TMT</small><h4 class="card-title text-nowrap mb-2"> {{jemler.san_m|default_if_none:""}}</h4>
+                    {% elif jemler.san_m == 0 or jemler.san_m != "" %}
+                    <small>TMT</small><h4 class="card-title text-nowrap mb-2">00.00</h4>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-success.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Jemi harydyň sany boýunça bahasy</span>
+                    {% if jemler.san_d > 0 %}
+                    <small>$</small><h4 class="card-title text-nowrap mb-2"> {{jemler.san_d|default_if_none:""}}</h4>
+                    {% elif jemler.san_d == 0 or jemler.san_d != "" %}
+                    <small>$</small><h4 class="card-title text-nowrap mb-2">00.00</h4>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-primary.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Jemi harydyň kg boýunça bahasy</span>
+                    {% if jemler.kg_m > 0 %}
+                    <small>TMT</small><h4 class="card-title text-nowrap mb-2"> {{jemler.kg_m|default_if_none:""}}</h4>
+                    {% elif jemler.kg_m == 0 or jemler.kg_m != "" %}
+                    <small>TMT</small><h4 class="card-title text-nowrap mb-2">00.00</h4>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                      <div class="avatar flex-shrink-0">
+                        <img src="{% static 'assets/img/icons/unicons/cc-primary.png' %}" alt="Credit Card" class="rounded" />
+                      </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-3">Jemi harydyň kg boýunça bahasy</span>
+                    {% if jemler.kg_d > 0 %}
+                    <small>TMT</small><h4 class="card-title mb-2">{{jemler.kg_d|default_if_none:""}}</h4>
+                    {% elif jemler.kg_d == 0 or jemler.kg_d != "" %}
+                    <small>TMT</small><h4 class="card-title mb-2">00.00</h4>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <!-- Jemi TMT we $ -->
+      </div>
+
+  <!-- Satyn alynan çigmal Rows -->
+    <a><button style="float:right;" onclick="printData()" class="btn rounded-pill btn-icon btn-primary"> <i class="tf-icons bx bx-printer"></i></button>
+    <input class="form-control mb-2" style="width:300px;" id='myInput' onkeyup='myFunction()' type='text' placeholder="Gözle ..."></a>
+    <div class="card" id="printTable">
+      <h5 class="card-header">Sklada gelen harytlaryň hasabaty</h5>
+      <div class="table-responsive text-nowrap">
+        <table class="table table-hover" id="myTable">
+          <thead>
+            <tr>
+              {% if user.wez.name == "Admin" %}
+              <th></th>
+              {% endif %}
+              <th>Harydyň<br>ady</th>
+              <th>Nirden<br>geldi</th>
+              <th>Modeli</th>
+              <th>Harydyň<br>sany</th>
+              <th>Harydyň<br>kg</th>
+              <th>Özüne düşýän<br>bahasy TMT</th>
+              <th>Özüne düşýän<br>bahasy $</th>
+              <th>Satlyk<br>bahasy TMT</th>
+              <th>Satlyk<br>bahasy $</th>
+              <th>Senesi</th>
+              <th>Bellik</th>
+            </tr>
+          </thead>
+          <tbody class="table-border-bottom-0">
+            {% for deg in myuser %}
+            <tr>
+              {% if user.wez.name == "Admin" %}
+              <td>
+                <a href="{% url 'sklad-update' deg.id %}" class="btn btn-icon btn-outline-success">
+                  <span class="tf-icons bx bx-share" data-toggle="tooltip" title="Ýollamak"></span>
+                </a>
+              </td>
+              {% endif %}
+              <td><strong>{{deg.harydyn_ady|default_if_none:""}}</strong></td>
+              <td><strong>{{deg.nirden_gelen|default_if_none:""}}</strong></td>
+              <td>{{deg.modeli|default_if_none:""}}</td>
+              <td><strong>{{deg.sany|floatformat:2|default_if_none:""}}</strong></td>
+              <td>{{deg.haryt_kg|floatformat:2|default_if_none:""}}</td>
+              <td>{{deg.oz_bahasy_m|floatformat:2|default_if_none:""}}</td>
+              <td>{{deg.oz_bahasy_dol|floatformat:2|default_if_none:""}}</td>
+              <td>{{deg.satlyk_bahasy_m|floatformat:2|default_if_none:""}}</td>
+              <td>{{deg.satlyk_bahasy_dol|floatformat:2|default_if_none:""}}</td>
+              <td><span class="badge bg-label-primary"><strong>{{deg.sene|date:"d.m.Y"}}<strong></span></td>
+              <td>{{deg.bellik|wordwrap:30|default_if_none:""}}</td>
+              {% if user.wez.name == "Admin" %}
+              <td>
+                <a href="{% url 'gelen-sklad-edit' deg.id %}" class="btn btn-icon btn-outline-warning">
+                  <span class="tf-icons bx bx-edit" data-toggle="tooltip" title="{% trans "üýtgetmek" %}"></span>
+                </a>
+                <a href="{% url 'gelen-sklad-delete' deg.id %}" class="btn btn-icon btn-outline-danger">
+                  <i class="tf-icons bx bx-trash" data-toggle="tooltip" title="{% trans "pozmak" %}"></i>
+                </a>
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <!--/ Satyn alynan çigmal Rows -->
+
+<!-- Sklada gelen çigmal Rows -->
+  <a><button style="float:right;" onclick="printData1()" class="btn rounded-pill btn-icon btn-primary"> <i class="tf-icons bx bx-printer"></i></button>
+  <input class="form-control mb-2 mt-5" style="width:300px;" id='myInput1' onkeyup='myFunction1()' type='text' placeholder="Gözle ..."></a>
+  <div class="card" id="printTable1">
+    <h5 class="card-header">Skladan giden harytlaryň hasabaty</h5>
+    <div class="table-responsive text-nowrap">
+      <table class="table table-hover" id="myTable1">
+        <thead>
+          <tr>
+            <th>Harydyň<br>ady</th>
+            <th>Nirä<br>gitdi</th>
+            <th>Modeli</th>
+            <th>Haryt<br>sany</th>
+            <th>Haryt<br>kg</th>
+            <th>Özüne düşýän<br>bahasy TMT</th>
+            <th>Özüne düşýän<br>bahasy $</th>
+            <th>Satlyk<br>bahasy TMT</th>
+            <th>Satlyk<br>bahasy $</th>
+            <th>Senesi</th>
+            <th>Bellik</th>
+          </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+          {% for deg in myuser %}
+          {% if deg.nira_gitdi != None %}
+          <tr>
+            <td><strong>{{deg.harydyn_ady|default_if_none:""}}</strong></td>
+            <td><strong>{{deg.nira_gitdi|default_if_none:""}}</strong></td>
+            <td>{{deg.modeli|default_if_none:""}}</td>
+            <td><strong>{{deg.g_sany|floatformat:2|default_if_none:""}}</strong></td>
+            <td>{{deg.g_haryt_kg|floatformat:2|default_if_none:""}}</td>
+            <td>{{deg.oz_bahasy_m|floatformat:2|default_if_none:""}}</td>
+            <td>{{deg.oz_bahasy_dol|floatformat:2|default_if_none:""}}</td>
+            <td>{{deg.satlyk_bahasy_m|floatformat:2|default_if_none:""}}</td>
+            <td>{{deg.satlyk_bahasy_dol|floatformat:2|default_if_none:""}}</td>
+            <td><span class="badge bg-label-primary"><strong>{{deg.g_sene|date:"d.m.Y"}}<strong></span></td>
+            <td>{{deg.g_bellik|wordwrap:30|default_if_none:""}}</td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+<!--/ Sklada gelen çigmal Rows -->
+
+<!-- Aydaky Sklad hasabat rewiz Rows -->
+  <a><button style="float:right;" onclick="printData2()" class="btn rounded-pill btn-icon btn-primary"> <i class="tf-icons bx bx-printer"></i></button>
+  <input class="form-control mb-2 mt-5" style="width:300px;" id='myInput2' onkeyup='myFunction2()' type='text' placeholder="Gözle ..."></a>
+  <div class="card" id="printTable2">
+    <h5 class="card-header">Aýdaky öndürilen önümiň hasabaty</h5>
+    <div class="table-responsive text-nowrap">
+      <table class="table table-hover" id="myTable2">
+        <thead>
+          <tr>
+            {% if user.wez.name == "Admin" %}
+            <th></th>
+            {% endif %}
+            <th>harydyn_ady</th>
+            <th>modeli</th>
+            <th>Özüne düşýän<br>bahasy TMT</th>
+            <th>Özüne düşýän<br>bahasy $</th>
+            <th>Geçen<br>aýdan<br>galyndy sany</th>
+            <th>Geçen<br>aýdan<br>galyndy kg</th>
+            <th>Geçen<br>aýdan<br>galyndy TMT</th>
+            <th>Geçen<br>aýdan<br>galyndy $</th>
+            <th>Jemi<br>sany</th>
+            <th>Jemi<br>kg</th>
+            <th>Jemi<br>gelen<br>bahasy TMT</th>
+            <th>Jemi<br>gelen<br>bahasy $</th>
+            <th>Jemi<br>giden<br>bahasy TMT</th>
+            <th>Jemi<br>giden<br>bahasy $</th>
+            <th>Ahyrky<br>galyndy<br>sany</th>
+            <th>Ahyrky<br>galyndy<br>kg</th>
+            <th>Ahyrky<br>galyndy TMT</th>
+            <th>Ahyrky<br>galyndy $</th>
+            <th>Ýerinde<br>bar haryt<br>sany</th>
+            <th>Ýerinde<br>bar haryt<br>kg</th>
+            <th>Tapawut<br>sany</th>
+            <th>Tapawut<br>kg</th>
+            <th>Sene</th>
+            <th>Bellik</th>
+          </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+          {% for deg in ay_has %}
+          <tr>
+            {% if user.wez.name == "Admin" %}
+            <td>
+              <a href="{% url 'ayjemi-sklad-update' deg.id %}" class="btn btn-icon btn-outline-success">
+                <span class="tf-icons bx bx-share" data-toggle="tooltip" title="Ýollamak"></span>
+              </a>
+            </td>
+            {% endif %}
+            <td><strong>{{deg.harydyn_ady|default_if_none:""}}</strong></td>
+            <td>{{deg.modeli|default_if_none:""}}</td>
+            <td>{{deg.oz_bahasy_m|floatformat:2|default_if_none:""}}</td>
+            <td>{{deg.oz_bahasy_d|floatformat:2|default_if_none:""}}</td>
+            <td><strong>{{deg.gecenay_galyndy_sany|floatformat:2|default_if_none:""}}</strong></td>
+            <td><strong>{{deg.gecenay_galyndy_kg|floatformat:2|default_if_none:""}}</strong></td>
+            <td><strong>{{deg.gecenay_galyndy_m|floatformat:2|default_if_none:""}}</strong></td>
+            <td><strong>{{deg.gecenay_galyndy_d|floatformat:2|default_if_none:""}}</strong></td>
+            <td><strong>{{deg.jemi_sany|floatformat:2|default_if_none:""}}</strong></td>
+            <td><strong>{{deg.haryt_kg|floatformat:2|default_if_none:""}}</strong></td>
+            <td><strong>{{deg.jemi_gelen_m|floatformat:2|default_if_none:""}}</strong></td>
+            <td>{{deg.jemi_gelen_d|floatformat:2|default_if_none:""}}</td>
+            <td><strong>{{deg.jemi_giden_m|floatformat:2|default_if_none:""}}</strong></td>
+            <td>{{deg.jemi_giden_d|floatformat:2|default_if_none:""}}</td>
+            <td><strong>{{deg.ahyrky_galyndy_sany|floatformat:2|default_if_none:""}}</strong></td>
+            <td><strong>{{deg.ahyrky_galyndy_kg|floatformat:2|default_if_none:""}}</strong></td>
+            <td><strong>{{deg.ahyrky_galyndy_m|floatformat:2|default_if_none:""}}</strong></td>
+            <td><strong>{{deg.ahyrky_galyndy_d|floatformat:2|default_if_none:""}}</strong></td>
+            <td>{{deg.yerinde_bar_haryt_sany|floatformat:2|default_if_none:""}}</td>
+            <td>{{deg.yerinde_bar_haryt_kg|floatformat:2|default_if_none:""}}</td>
+            <td><strong>{{deg.tapawudy_sany|floatformat:2|default_if_none:""}}</strong></td>
+            <td><strong>{{deg.tapawudy_kg|floatformat:2|default_if_none:""}}</strong></td>
+            <td>{{deg.sene|date:"m.Y"}}</td>
+            <td>{{deg.bellik|default_if_none:""}}</td>
+            {% if user.wez.name == "Admin" %}
+            <td>
+              <a href="{% url 'sklad-hasabat-delete' deg.id %}" class="btn btn-icon btn-outline-danger">
+                <i class="tf-icons bx bx-trash" data-toggle="tooltip" title="{% trans "pozmak" %}"></i>
+              </a>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+<!--/ Aydaky sklad hasabat rewiz Rows -->
+
+<!--  Modal Sklada gelen haryt insert -->
+  <div class="modal fade" id="exLargeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <form method="post" enctype="multipart/form-data" id="personForm" data-zakcode-url="{% url 'load_zak_code' %}" data-zakgornus-url="{% url 'load_zak_gornus' %}" >
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel4">Sklada gelen täze harydy girizmek</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              {% csrf_token %}
+
+              <div class="row">
+                <div class="col-xl-4 mb-3">
+                  {{form.harydyn_ady}}
+                </div>
+                <div class="col-xl-4 mb-3">
+                  {{form.nirden_gelen}}
+                </div>
+                <div class="col-xl-4 mb-3">
+                  {{form.modeli}}
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-xl-2 mb-3">
+                  {{form.sany}}
+                </div>
+                <div class="col-xl-2 mb-3">
+                  {{form.haryt_kg}}
+                </div>
+                <div class="col-xl-4 mb-3">
+                  {{form.oz_bahasy_m}}
+                </div>
+                <div class="col-xl-4 mb-3">
+                  {{form.oz_bahasy_dol}}
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-xl-6 mb-3">
+                  {{form.satlyk_bahasy_m}}
+                </div>
+                <div class="col-xl-6 mb-3">
+                  {{form.satlyk_bahasy_dol}}
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-xl-12 mb-3">
+                  {{form.bellik}}
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Çykyş</button>
+            <button type="submit" class="btn btn-primary">Tassyklamak</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    </div>
+  </div>
+<!-- / Modal Sklada gelen haryt insert -->
+
+  <!-- Paginator -->
+    {% if myuser.paginator.num_pages > 1 %}
+      <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+              {% if myuser.paginator.num_pages != 1 %}
+                  <li class="page-item"><a class="page-link" href="?page=1">{% trans "Birinji" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "Birinji" %}</a></li>
+              {% endif %}
+              {% if myuser.has_previous %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.previous_page_number }}">&laquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+              {% endif %}
+              {% for i in myuser.paginator.page_range %}
+                  {% if myuser.number == i %}
+                      <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">{% trans "(häzirki)" %}</span></a></li>
+                  {% elif myuser.number > i|add:"-5" and myuser.number < i|add:"+5"%}
+                      <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+              {% endfor %}
+              {% if myuser.has_next %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.next_page_number }}">&raquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
+              {% endif %}
+              {% if myuser.paginator.num_pages != myuser.number %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.paginator.num_pages }}">{% trans "soňky" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "soňky" %}</a></li>
+              {% endif %}
+          </ul>
+      </nav>
+    {% endif %}
+
+    {% if ay_h.paginator1.num_pages > 1 %}
+      <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+              {% if ay_h.paginator1.num_pages != 1 %}
+                  <li class="page-item"><a class="page-link" href="?page=1">{% trans "Birinji" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "Birinji" %}</a></li>
+              {% endif %}
+              {% if ay_h.has_previous %}
+                  <li class="page-item"><a class="page-link" href="?page={{ ay_h.previous_page_number }}">&laquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+              {% endif %}
+              {% for i in ay_h.paginator1.page_range %}
+                  {% if ay_h.number == i %}
+                      <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">{% trans "(häzirki)" %}</span></a></li>
+                  {% elif ay_h.number > i|add:"-5" and ay_h.number < i|add:"+5"%}
+                      <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+              {% endfor %}
+              {% if ay_h.has_next %}
+                  <li class="page-item"><a class="page-link" href="?page={{ ay_h.next_page_number }}">&raquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
+              {% endif %}
+              {% if ay_h.paginator1.num_pages != ay_h.number %}
+                  <li class="page-item"><a class="page-link" href="?page={{ ay_h.paginator1.num_pages }}">{% trans "soňky" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "soňky" %}</a></li>
+              {% endif %}
+          </ul>
+      </nav>
+    {% endif %}
+  <!--/ Paginator -->
+
+  <script type="text/javascript">
+    function printData()
+    {
+        var divToPrint = document.getElementById("printTable");
+        var style = "<style>";
+        style = style + "@page { size: A4 landscape; margin-top:5mm;margin-bottom:3mm;margin-left:3mm;margin-right:3mm; }";
+        style = style + "table {width: 100%; font: 10px Times-Roman;}";
+        style = style + "table, th, td {border: solid 1px #000000; border-collapse: collapse;";
+        style = style + "padding: 2px 3px; text-align: center;}";
+        style = style + "</style>";
+
+        newWin= window.open('','','height=700, width=1500');
+        newWin.document.write(style);
+        newWin.document.write(divToPrint.outerHTML);
+        newWin.print();
+        newWin.close();
+    }
+    function printData1()
+    {
+        var divToPrint = document.getElementById("printTable1");
+        var style = "<style>";
+        style = style + "@page { size: A4 landscape; margin-top:5mm;margin-bottom:3mm;margin-left:3mm;margin-right:3mm; }";
+        style = style + "table {width: 100%; font: 10px Times-Roman;}";
+        style = style + "table, th, td {border: solid 1px #000000; border-collapse: collapse;";
+        style = style + "padding: 2px 3px; text-align: center;}";
+        style = style + "</style>";
+
+        newWin= window.open('','','height=700, width=1500');
+        newWin.document.write(style);
+        newWin.document.write(divToPrint.outerHTML);
+        newWin.print();
+        newWin.close();
+    }
+    function printData2()
+    {
+        var divToPrint = document.getElementById("printTable2");
+        var style = "<style>";
+        style = style + "@page { size: A4 landscape; margin-top:5mm;margin-bottom:3mm;margin-left:3mm;margin-right:3mm; }";
+        style = style + "table {width: 100%; font: 10px Times-Roman;}";
+        style = style + "table, th, td {border: solid 1px #000000; border-collapse: collapse;";
+        style = style + "padding: 2px 3px; text-align: center;}";
+        style = style + "</style>";
+
+        newWin= window.open('','','height=700, width=1500');
+        newWin.document.write(style);
+        newWin.document.write(divToPrint.outerHTML);
+        newWin.print();
+        newWin.close();
+    }
+    function myFunction() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        const tableData = tr[i].getElementsByTagName("td");
+        let allTextContent = '';
+        for (let ind = 0; ind < tableData.length; ind++) {
+            allTextContent += tableData[ind].innerText;
+        }
+        
+        if (allTextContent) {
+          if (allTextContent.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    }
+    function myFunction1() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput1");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable1");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        const tableData = tr[i].getElementsByTagName("td");
+        let allTextContent = '';
+        for (let ind = 0; ind < tableData.length; ind++) {
+            allTextContent += tableData[ind].innerText;
+        }
+        
+        if (allTextContent) {
+          if (allTextContent.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    }
+    function myFunction2() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput2");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable2");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        const tableData = tr[i].getElementsByTagName("td");
+        let allTextContent = '';
+        for (let ind = 0; ind < tableData.length; ind++) {
+            allTextContent += tableData[ind].innerText;
+        }
+        
+        if (allTextContent) {
+          if (allTextContent.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    }
+  </script>
+    <!-- / Content -->
+  </div>
+
+    <div class="content-backdrop fade"></div>
+</div>
+{% endblock content %}
+
+{% include 'include/jig.html' %}

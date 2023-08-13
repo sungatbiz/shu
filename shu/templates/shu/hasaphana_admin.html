@@ -1,0 +1,387 @@
+{% extends 'shu/base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block menu %}
+<li class="menu-item">
+  <a href="{% url 'dashboard' %}" class="menu-link">
+    <i class="menu-icon tf-icons bx bx-arrow-back"></i>
+    <div>Yza</div>
+  </a>
+</li>
+{% if user.wez.name == "Admin" %}
+<li class="menu-item">
+  <a href="" class="menu-link layout-menu-toggle" data-bs-toggle="modal" data-bs-target="#modalCenter1">
+    <i class="menu-icon tf-icons bx bx-bar-chart-alt"></i>
+    <div>Bölek hasaby girizmek</div>
+  </a>
+</li>
+<li class="menu-item">
+  <a href="" class="menu-link layout-menu-toggle" data-bs-toggle="modal" data-bs-target="#modalCenter">
+    <i class="menu-icon tf-icons bx bx-money"></i>
+    <div>Awans bermek</div>
+  </a>
+</li>
+{% endif %}
+{% endblock menu %}
+
+{% block content %}
+<div class="content-wrapper">
+<!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">SHU / {{ user.office|default_if_none:"" }} /</span> {{ title }}</h4>
+      <div class="row">
+      <!-- girdeji çykdaýjy manatda we dollarda -->
+        <div class="col-12">
+          <div class="row">
+            <div class="col-md-6 col-lg-2 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0">
+                      <img src="{% static 'assets/img/icons/unicons/cc-success.png' %}" alt="Credit Card" class="rounded" />
+                    </div>
+                  </div>
+                  <span class="fw-semibold d-block mb-3">Galyndy</span>
+                  {% if gal_m > 0 %}
+                  <small>TMT</small><h4 class="card-title text-nowrap mb-2"> {{gal_m|default_if_none:""}}</h4>
+                  {% elif gal_m == 0 or gal_m != "" %}
+                  <small>TMT</small><h4 class="card-title text-nowrap mb-2">00.00</h4>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-2 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0">
+                      <img src="{% static 'assets/img/icons/unicons/cc-success.png' %}" alt="Credit Card" class="rounded" />
+                    </div>
+                  </div>
+                  <span class="fw-semibold d-block mb-3">Galyndy</span>
+                  {% if gal_d > 0 %}
+                  <small>$</small><h4 class="card-title text-nowrap mb-2"> {{gal_d|default_if_none:""}}</h4>
+                  {% elif gal_d == 0 or gal_d != "" %}
+                  <small>$</small><h4 class="card-title text-nowrap mb-2">00.00</h4>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-2 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0">
+                      <img src="{% static 'assets/img/icons/unicons/cc-error.png' %}" alt="Credit Card" class="rounded" />
+                    </div>
+                  </div>
+                  <span class="fw-semibold d-block mb-3">Çykdajy</span>
+                  {% if tot_b.cyk_m > 0 %}
+                  <small>TMT</small><h4 class="card-title text-nowrap mb-2"> {{tot_b.cyk_m|default_if_none:""}}</h4>
+                  {% elif tot_b.cyk_m == 0 or tot_b.cyk_m != "" %}
+                  <small>TMT</small><h4 class="card-title text-nowrap mb-2">00.00</h4>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-2 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0">
+                      <img src="{% static 'assets/img/icons/unicons/cc-primary.png' %}" alt="Credit Card" class="rounded" />
+                    </div>
+                  </div>
+                  <span class="fw-semibold d-block mb-3">Girdeji</span>
+                  {% if tot_b.gir_m > 0 %}
+                  <small>TMT</small><h4 class="card-title mb-2">{{tot_b.gir_m|default_if_none:""}}</h4>
+                  {% elif tot_b.gir_m == 0 or tot_b.gir_m != "" %}
+                  <small>TMT</small><h4 class="card-title mb-2">00.00</h4>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-2 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0">
+                      <img src="{% static 'assets/img/icons/unicons/cc-error.png' %}" alt="Credit Card" class="rounded" />
+                    </div>
+                  </div>
+                  <span class="fw-semibold d-block mb-3">Çykdajy dollar</span>
+                  {% if tot_b.cyk_d > 0 %}
+                  <small>$</small><h4 class="card-title text-nowrap mb-2"> {{tot_b.cyk_d|floatformat:2|default_if_none:""}}</h4>
+                  {% elif tot_b.cyk_d == 0 or tot_b.cyk_d != "" %}
+                  <small>$</small><h4 class="card-title text-nowrap mb-2">00.00</h4>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-2 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <div class="card-title d-flex align-items-start justify-content-between">
+                    <div class="avatar flex-shrink-0">
+                      <img src="{% static 'assets/img/icons/unicons/cc-primary.png' %}" alt="Credit Card" class="rounded" />
+                    </div>
+                  </div>
+                  <span class="fw-semibold d-block mb-3">Girdeji dollar</span>
+                  {% if tot_b.gir_d > 0 %}
+                  <small>$</small><h4 class="card-title mb-2">{{tot_b.gir_d|floatformat:2|default_if_none:""}}</h4>
+                  {% elif tot_b.gir_d == 0 or tot_b.gir_d != "" %}
+                  <small>$</small><h4 class="card-title mb-2">00.00</h4>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <!-- girdeji çykdaýjy manatda we dollarda -->
+      </div>
+
+    <!-- wagtlayyn ugradys hasap Rows -->
+      {% for x in oj %}
+      {% if x.u_came_id == user and x.tassyk == 0 %}
+        {% csrf_token %}
+        <div class="card mb-5 mt-5">
+          <h5 class="card-header" style="background-color: yellow;">Tassyklamak: <small> pul geçirimleri</small></h5>
+              <div class="table-responsive text-nowrap">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Ugradyjy</th>
+                      <th>Senesi</th>
+                      <th>Pul<br>möçberi TMT</th>
+                      <th>Pul<br>möçberi $</th>
+                      <th>Awans TMT</th>
+                      <th>Awans $</th>
+                      <th>Sebäbi</th>
+                      <th>Bellik</th>
+                      <th>Hereket</th>
+                    </tr>
+                  </thead>
+                  <tbody class="table-border-bottom-0">
+                    {% for deg in oj %}
+                    {% if deg.u_came_id == user and deg.tassyk == 0 %}
+                    <tr>
+                      <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{deg.u_sent_id.last_name|default_if_none:""}} {{deg.u_sent_id.first_name|default_if_none:""}}</strong></td>
+                      <td>{{deg.sene|date:"d.m.Y"|default_if_none:""}}</td>
+                      <td><strong>{{deg.cash|floatformat:2|default_if_none:""}}</strong></td>
+                      <td><strong>{{deg.cash_d|floatformat:2|default_if_none:""}}</strong></td>
+                      <td><strong>{{deg.awans_m|floatformat:2|default_if_none:""}}</strong></td>
+                      <td><strong>{{deg.awans_d|floatformat:2|default_if_none:""}}</strong></td>
+                      <td><span class="badge bg-label-primary me-1">{{deg.sebap|wordwrap:16|linebreaksbr|default_if_none:""}}</span></td>
+                      <td>{{deg.bellik|wordwrap:16|linebreaksbr|default_if_none:""}}</td>
+                      <td>
+                        <a href="{% url 'ojidanie-update' deg.id %}" class="btn btn-outline-success">Tassyklamak</a>
+                        <a class="btn btn-outline-danger" href="{% url 'oj-delete' deg.id %}">Inkär etmek</a>
+                      </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+        </div>
+      {% endif %}
+      {% endfor %}
+    <!--/ wagtlayyn ugradys hasap Rows -->
+
+    <!-- Bolek hasaplar Rows -->
+      <a><button style="float:right;" onclick="printData()" class="btn rounded-pill btn-icon btn-primary"> <i class="tf-icons bx bx-printer"></i></button>
+      <input class="form-control mb-2" style="width:300px;" id='myInput' onkeyup='myFunction()' type='text' placeholder="Gözle ..."></a>
+      <div class="card" id="printTable">
+        <h5 class="card-header">Bölek hasaplar</h5>
+        <div class="table-responsive text-nowrap">
+          <table class="table table-striped" id="myTable">
+            <thead>
+              <tr>
+                <th>Ulanyjy</th> 
+                <th>Sene</th>
+                <th>Girdeji manat</th>
+                <th>Girdeji $</th>
+                <th>Çykdajy manat</th>
+                <th>Çykdajy $</th>
+                <th>Awans TMT</th>
+                <th>Awans $</th>
+                <th>Sebäbi</th>
+                <th>Bellik</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+              {% for deg in myuser %}
+              <tr>
+                {% if deg.user != None %}
+                <td><a href="{% url 'hasaphana' deg.user_id %}"><strong>{{deg.user.last_name}} {{deg.user.first_name}}</strong></a></td>
+                {% else %}
+                <td><a href="{% url 'hasaphana' deg.user_sent_id %}"><strong>{{deg.user_sent.last_name}} {{deg.user_sent.first_name}}</strong></a></td>
+                {% endif %}
+                <td>{{deg.sene|date:"d.m.Y"}}</td>
+                <td><span class="badge bg-label-success border-light-success me-1"><strong style="color:Green;">{{deg.girdeji|floatformat:2|default_if_none:""}}</strong></span></td>
+                <td><span class="badge bg-label-success border-light-success me-1"><strong style="color:Green;">{{deg.girdeji_dollar|floatformat:2|default_if_none:""}}</strong></span></td>
+                <td><span class="badge bg-label-danger border-light-danger me-1"><strong style="color:Red;">{{deg.cykdajy|floatformat:2|default_if_none:""}}</strong></span></td>
+                <td><span class="badge bg-label-danger border-light-danger me-1"><strong style="color:Red;">{{deg.cykdajy_dollar|floatformat:2|default_if_none:""}}</strong></span></td>
+                <td><strong>{{deg.awans_m|floatformat:2|default_if_none:""}}</strong></td>
+                <td><strong>{{deg.awans_d|floatformat:2|default_if_none:""}}</strong></td>
+                <td>{{deg.sebap|wordwrap:16|linebreaksbr|default_if_none:""}}</td>
+                <td>{{deg.bellik|wordwrap:30|default_if_none:""}}</td>
+                {% if user.wez.name == "Admin" %}
+                <td>
+                  <a href="{% url 'bolek-hasap-edit' deg.id %}" class="btn btn-icon btn-outline-warning">
+                    <span class="tf-icons bx bx-edit" data-toggle="tooltip" title="{% trans "üýtgetmek" %}"></span>
+                  </a>
+                  <a href="{% url 'bolek-hasap-delete' deg.id %}" class="btn btn-icon btn-outline-danger">
+                    <i class="tf-icons bx bx-trash" data-toggle="tooltip" title="{% trans "pozmak" %}"></i>
+                  </a>
+                </td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <!--/ Bolek hasaplar Rows -->
+    
+    <!-- Bolek hasap insert -->
+      <div class="modal fade" id="modalCenter1" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <form method="post">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalCenterTitle">Bölek hasap ýöretmek</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                {% csrf_token %}
+                {{ form3|crispy }}
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Çykyş</button>
+                <button type="submit" class="btn btn-primary">Tassyklamak</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        </div>
+      </div>
+    <!--/ Bolek hasap insert -->
+
+    <!-- Insert ojidanie -->
+      <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <form method="post">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalCenterTitle">Täze Pul geçirimi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                {% csrf_token %}
+                {{ form2|crispy }}
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Çykyş</button>
+                <button type="submit" class="btn btn-primary">Tassyklamak</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        </div>
+      </div>
+    <!--/ Insert ojidanie -->
+
+    </div>  
+
+    </div>
+
+  <!-- Paginator -->
+    {% if myuser.paginator.num_pages > 1 %}
+      <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+              {% if myuser.paginator.num_pages != 1 %}
+                  <li class="page-item"><a class="page-link" href="?page=1">{% trans "Birinji" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "Birinji" %}</a></li>
+              {% endif %}
+              {% if myuser.has_previous %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.previous_page_number }}">&laquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+              {% endif %}
+              {% for i in myuser.paginator.page_range %}
+                  {% if myuser.number == i %}
+                      <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">{% trans "(häzirki)" %}</span></a></li>
+                  {% elif myuser.number > i|add:"-5" and myuser.number < i|add:"+5"%}
+                      <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+              {% endfor %}
+              {% if myuser.has_next %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.next_page_number }}">&raquo;</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
+              {% endif %}
+              {% if myuser.paginator.num_pages != myuser.number %}
+                  <li class="page-item"><a class="page-link" href="?page={{ myuser.paginator.num_pages }}">{% trans "soňky" %}</a></li>
+              {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">{% trans "soňky" %}</a></li>
+              {% endif %}
+          </ul>
+      </nav>
+    {% endif %}
+  <!--/ Paginator -->
+
+  <script type="text/javascript">
+    function printData()
+    {
+        var divToPrint = document.getElementById("printTable");
+        var style = "<style>";
+        style = style + "@page { size: A4 landscape; margin-top:5mm;margin-bottom:3mm;margin-left:3mm;margin-right:3mm; }";
+        style = style + "table {width: 100%; font: 10px Times-Roman;}";
+        style = style + "table, th, td {border: solid 1px #000000; border-collapse: collapse;";
+        style = style + "padding: 2px 3px; text-align: center;}";
+        style = style + "</style>";
+
+        newWin= window.open('','','height=700, width=1500');
+        newWin.document.write(style);
+        newWin.document.write(divToPrint.outerHTML);
+        newWin.print();
+        newWin.close();
+    }
+    function myFunction() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        const tableData = tr[i].getElementsByTagName("td");
+        let allTextContent = '';
+        for (let ind = 0; ind < tableData.length; ind++) {
+            allTextContent += tableData[ind].innerText;
+        }
+        
+        if (allTextContent) {
+          if (allTextContent.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    }
+  </script>
+<!-- / Content -->
+
+    <div class="content-backdrop fade"></div>
+</div>
+{% endblock content %}
+
+{% include 'include/jig.html' %}
