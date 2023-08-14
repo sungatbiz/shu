@@ -16,9 +16,9 @@ SESSION_SAVE_EVERY_REQUEST = True
 SECRET_KEY = '@_r_i$0ua_av@u&j&55r-kzuq%#m+)t81a0-fmu!&q7duy6*j('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['.vercel.app',]
+ALLOWED_HOSTS = ['*',]
 
 
 # Application definition
@@ -120,11 +120,13 @@ AUTH_USER_MODEL = "users.AllUsers"
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
 
-STATIC_DIR = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = [STATIC_DIR]
+# STATIC_DIR = os.path.join(BASE_DIR, 'static')
+# STATICFILES_DIRS = [STATIC_DIR]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / "media_build" / "media"
+
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CRISPY_TEMPLATE_PACK = 'uni_form'
 

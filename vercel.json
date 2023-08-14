@@ -9,6 +9,11 @@
         "src": "build.sh",
         "use": "@vercel/static-build",
         "config": { "distDir": "staticfiles_build" }
+      },
+      {
+        "src": "build.sh",
+        "use": "@vercel/media-build",
+        "config": { "distDir": "media_build" }
       }
     ],
     "routes": [
@@ -16,6 +21,10 @@
       "src": "/static/(.*)",
       "dest": "/static/$1"
       },
+      {
+        "src": "/media/(.*)",
+        "dest": "/media/$1"
+        },
       {
         "src": "/(.*)",
         "dest": "core/wsgi.py"
