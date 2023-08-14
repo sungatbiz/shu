@@ -1,0 +1,15 @@
+asgiref==3.7.2
+certifi==2023.5.7
+distlib==0.3.6
+Django==4.2.2
+django-crispy-forms==1.14.0
+filelock==3.12.2
+mysqlclient==2.2.0
+Pillow==10.0.0
+pipenv==2023.7.3
+platformdirs==3.8.0
+python-json-logger==2.0.7
+sqlparse==0.4.4
+tzdata==2023.3
+virtualenv==20.23.1
+virtualenv-clone==0.5.7
